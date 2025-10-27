@@ -207,7 +207,50 @@ flutter pub run flutter_launcher_icons:mainflutter_launcher_icons:
   image_path: "assets/images/launcher_icon.png"implementation 'com.android.billingclient:billing:7.1.0'flutter clean
 flutter build appbundle --release --target-platform android-arm,android-arm64,android-x64java -jar bundletool.jar validate --bundle build/app/outputs/bundle/release/app-release.aab
 ¡Bienvenido a Tokyo Roulette Predicciones! Un simulador multiplataforma para ruletas europea y americana. Genera giros aleatorios con RNG seguro, analiza historial para predicciones estadísticas (calientes/fríos, sectores como Voisins du Zéro). Modelo freemium: Gratuita (básicas), Avanzada $199 (sectores específicos), Premium $299 (análisis completo). UI intuitiva con colores de ruleta. Solo simulación educativa - no apuestas reales. Compatible con Android, iOS, tablets, laptops. Requiere permisos de ubicación para geobloqueo a México. Política de privacidad: [TU_URL].
-
+java -jar bundletool.jar validate --bundle build/app/outputs/bundle/release/app-release.aabflutter clean
+flutter build appbundle --release --target-platform android-arm,android-arm64,android-x64implementation 'com.android.billingclient:billing:7.1.0'flutter_launcher_icons:
+  android: true
+  image_path: "assets/images/launcher_icon.png"flutter pub add flutter_launcher_icons
+flutter pub run flutter_launcher_icons:mainElevatedButton(
+  onPressed: () => launchUrl(Uri.parse('TU_PRIVACY_POLICY_URL_AQUÍ')),
+  child: Text('Política de Privacidad'),
+),Text('Simulador educativo. No involucra apuestas reales de dinero. Solo para mayores de 18 años.'),compileSdkVersion 35
+minSdkVersion 21
+targetSdkVersion 35signingConfigs {
+    release {
+        keyAlias 'upload'
+        keyPassword 'TU_PASSPHRASE_AQUÍ'  // Reemplaza
+        storeFile file('upload-keystore.jks')
+        storePassword 'TU_PASSPHRASE_AQUÍ'  // Reemplaza
+    }
+}
+buildTypes {
+    release {
+        signingConfig signingConfigs.release
+    }
+}mv upload-keystore.jks android/app/keytool -genkey -v -keystore upload-keystore.jks -keyalg RSA -keysize 2048 -validity 10000 -alias uploadflutter upgrade
+flutter pub get
+flutter pub upgradeflutter build appbundle --release --target-platform android-arm,android-arm64,android-x64android {
+    ...
+    signingConfigs {
+        release {
+            keyAlias 'upload'
+            keyPassword 'tu_passphrase'
+            storeFile file('~/upload-keystore.jks')
+            storePassword 'tu_passphrase'
+        }
+    }
+    buildTypes {
+        release {
+            signingConfig signingConfigs.release
+        }
+    }
+}keytool -genkey -v -keystore ~/upload-keystore.jks -keyalg RSA -keysize 2048 -validity 10000 -alias uploadeval "$(ssh-agent -s)"
+ssh-add ~/.ssh/id_ed25519
+ssh -T git@github.compkg install termux-api
+termux-clipboard-set "$(cat ~/.ssh/id_ed25519.pub)"pkg update && pkg upgrade -y
+pkg install openssh git -yssh-keygen -t ed25519 -C "Melampe - Android" -f ~/.ssh/id_ed25519flutter pub get
+flutter clean9aa7a3ca2e472a0f03e13c0da3f29518e09bf52e[![CI](https://github.com/Melampe001/Idea/actions/workflows/blank.yml/badge.svg)](https://github.com/Melampe001/Idea/actions/workflows/blank.yml)git pull origin maingit checkout maingit merge Melampe001-patch-1git push -u origin main
 
 
 
