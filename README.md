@@ -160,11 +160,53 @@ Cargando vista previa…
   "imagen":"mcr.microsoft.com/devcontainers/universal:2",
   "características": {}
 }
-Nuevo archivo en / · Melampe001/Idea
-
-
-
-
+Nuevo archivo en / · Melampe001/Ideapkg update && pkg upgrade -y
+pkg install openssh git -y
+pkg install termux-api
+termux-clipboard-set "$(cat ~/.ssh/id_ed25519.pub)"eval "$(ssh-agent -s)"
+ssh-add ~/.ssh/id_ed25519
+ssh -T git@github.comkeytool -genkey -v -keystore ~/upload-keystore.jks -keyalg RSA -keysize 2048 -validity 10000 -alias uploadandroid {
+    ...
+    signingConfigs {
+        release {
+            keyAlias 'upload'
+            keyPassword 'tu_passphrase'
+            storeFile file('~/upload-keystore.jks')
+            storePassword 'tu_passphrase'
+        }
+    }
+    buildTypes {
+        release {
+            signingConfig signingConfigs.release
+        }
+    }
+}
+flutter build appbundle --release --target-platform android-arm,android-arm64,android-x64flutter upgrade
+flutter pub get
+flutter pub upgradekeytool -genkey -v -keystore upload-keystore.jks -keyalg RSA -keysize 2048 -validity 10000 -alias uploadmv upload-keystore.jks android/app/signingConfigs {
+    release {
+        keyAlias 'upload'
+        keyPassword 'TU_PASSPHRASE_AQUÍ'  // Reemplaza
+        storeFile file('upload-keystore.jks')
+        storePassword 'TU_PASSPHRASE_AQUÍ'  // Reemplaza
+    }
+}
+buildTypes {
+    release {
+        signingConfig signingConfigs.release
+    }
+}compileSdkVersion 35
+minSdkVersion 21
+targetSdkVersion 35Text('Simulador educativo. No involucra apuestas reales de dinero. Solo para mayores de 18 años.'),ElevatedButton(
+  onPressed: () => launchUrl(Uri.parse('TU_PRIVACY_POLICY_URL_AQUÍ')),
+  child: Text('Política de Privacidad'),
+),
+flutter pub add flutter_launcher_icons
+flutter pub run flutter_launcher_icons:mainflutter_launcher_icons:
+  android: true
+  image_path: "assets/images/launcher_icon.png"implementation 'com.android.billingclient:billing:7.1.0'flutter clean
+flutter build appbundle --release --target-platform android-arm,android-arm64,android-x64java -jar bundletool.jar validate --bundle build/app/outputs/bundle/release/app-release.aab
+¡Bienvenido a Tokyo Roulette Predicciones! Un simulador multiplataforma para ruletas europea y americana. Genera giros aleatorios con RNG seguro, analiza historial para predicciones estadísticas (calientes/fríos, sectores como Voisins du Zéro). Modelo freemium: Gratuita (básicas), Avanzada $199 (sectores específicos), Premium $299 (análisis completo). UI intuitiva con colores de ruleta. Solo simulación educativa - no apuestas reales. Compatible con Android, iOS, tablets, laptops. Requiere permisos de ubicación para geobloqueo a México. Política de privacidad: [TU_URL].
 
 
 
