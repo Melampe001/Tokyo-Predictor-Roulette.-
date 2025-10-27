@@ -250,7 +250,7 @@ ssh-add ~/.ssh/id_ed25519
 ssh -T git@github.compkg install termux-api
 termux-clipboard-set "$(cat ~/.ssh/id_ed25519.pub)"pkg update && pkg upgrade -y
 pkg install openssh git -yssh-keygen -t ed25519 -C "Melampe - Android" -f ~/.ssh/id_ed25519flutter pub get
-flutter clean9aa7a3ca2e472a0f03e13c0da3f29518e09bf52e[![CI](https://github.com/Melampe001/Idea/actions/workflows/blank.yml/badge.svg)](https://github.com/Melampe001/Idea/actions/workflows/blank.yml)
+flutter clean9aa7a3ca2e472a0f03e13c0da3f29518e09bf52e[![CI](https://github.com/Melampe001/Idea/actions/workflows/blank.yml/badge.svg)](https://github.com/Melampe001/Idea/actions/workflows/blank.yml)git pull origin maingit checkout maingit merge Melampe001-patch-1git push -u origin main
 
 
 
