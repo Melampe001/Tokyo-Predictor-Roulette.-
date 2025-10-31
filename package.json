@@ -1,0 +1,25 @@
+{
+  "name": "tokioai",
+  "version": "1.0.0",
+  "description": "Módulo de agente IA para análisis predictivo, integración dinámica de RNG y seguridad reforzada",
+  "main": "src/tokioai.js",
+  "type": "module",
+  "scripts": {
+    "test": "node test/test.js",
+    "example": "node examples/usage.js"
+  },
+  "keywords": [
+    "ai",
+    "predictive-analysis",
+    "roulette",
+    "websocket",
+    "encryption",
+    "pdf"
+  ],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "ws": "^8.14.2",
+    "pdfkit": "^0.13.0"
+  }
+}
