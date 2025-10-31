@@ -228,7 +228,7 @@ test('Limpieza de resultados', () => {
 });
 
 // Test 17: Eventos - result-captured
-test('Eventos - result-captured', (done) => {
+test('Eventos - result-captured', () => {
   const tokio = new TokioAI({ autoAnalyze: false });
   let eventFired = false;
   
