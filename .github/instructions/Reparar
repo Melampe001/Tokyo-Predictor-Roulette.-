@@ -1,0 +1,8 @@
+### TokioAI - Módulo de análisis predictivo para aplicación de casino
+
+- Motor de análisis con detección de tendencias y sincronización WebSocket (`tokioai.js`)
+- Cifrado AES-256-GCM para seguridad de datos (`crypto-utils.js`)
+- Generación de reportes en PDF con estadísticas (`pdf-generator.js`)
+- Suite de pruebas con 20 casos (`test/test.js`)
+- Ejemplos de uso práctico (`examples/usage.js`)
+- Documentación completa (`TOKIOAI_README.md`, `IMPLEMENTATION_SUMMARY.md`)git commit -m "Merge TokioAI: módulo de análisis predictivo con cifrado, WebSocket, PDF y pruebas completas"npm testnode examples/usage.js
