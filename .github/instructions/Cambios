@@ -1,0 +1,39 @@
+uses: actions/upload-artifact@v3uses: actions/upload-artifact@v4-    - name: Upload build artifact
+-      uses: actions/upload-artifact@v3
+-      with:
+-        name: build-artifact
+-        path: build/output/
++    - name: Upload build artifact
++      uses: actions/upload-artifact@v4
++      with:
++        name: build-artifact
++        path: build/output/
++        # Opcional: fallar si no se encuentran archivos (error|warn|ignore)
++        if-no-files-found: error
++        # Opcional: si necesitas subir archivos ocultos
++        # include-hidden-files: true-    - name: Download artifact
+-      uses: actions/download-artifact@v3
+-      with:
+-        name: build-artifact
++    - name: Download artifact
++      uses: actions/download-artifact@v4
++      with:
++        name: build-artifact# 1) buscar dónde aparece v3
+git grep -n "upload-artifact@v3" || true
+git grep -n "download-artifact@v3" || true
+
+# 2) editar el/los archivos workflow (ej. .github/workflows/build.yml)
+# o usa sed para reemplazar en todos los workflows:
+git checkout -b fix/actions-artifact-v4
+git grep -l "upload-artifact@v3" | xargs sed -i 's@upload-artifact@v3@upload-artifact@v4@g'
+git grep -l "download-artifact@v3" | xargs sed -i 's@download-artifact@v3@download-artifact@v4@g'
+
+# 3) revisar cambios
+git add .github/workflows/*.yml
+git commit -m "ci: upgrade actions/{upload,download}-artifact v3 -> v4 to avoid deprecation failures"
+
+# 4) push y abrir PR
+git push origin fix/actions-artifact-v4
+# luego crea PR desde la rama o usa hub/gh:
+gh pr create --title "fix(ci): upgrade artifact actions v3 -> v4" --body "Actualiza actions/upload-artifact y download-artifact a v4 (v3 deprecado)."# ejecutar el workflow (ej. nombre: build)
+act -j build
