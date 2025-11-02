@@ -1,34 +1,69 @@
-name: Flutter CI
+# Tokyo Predictor Roulette
 
-on:
-  push:
-    branches:
-      - main
-  pull_request:
-    branches:
-      - main
+Proyecto de análisis predictivo para casino privado Android con módulo de IA.
 
-jobs:
-  build:
-    runs-on: ubuntu-latest
+## TokioAI - Módulo de Análisis Predictivo
 
-    steps:
-      - name: Clonar repositorio
-        uses: actions/checkout@v3
+TokioAI es un módulo de agente IA diseñado para análisis predictivo, integración dinámica de RNG y seguridad reforzada.
 
-      - name: Instalar Flutter
-        uses: subosito/flutter-action@v2
-        with:
-          flutter-version: '3.24.0'
+### Características Principales
 
-      - name: Obtener dependencias
-        run: flutter pub get
+- ✅ **Captura y Sincronización**: Resultados manuales o vía WebSocket
+- ✅ **Análisis por Lotes**: Procesa grupos de 10 resultados con cálculo de tendencias
+- ✅ **Sugerencias Optimizadas**: Recomendaciones basadas en patrones y frecuencias
+- ✅ **Encriptación Local**: Seguridad con AES-256-GCM
+- ✅ **Generación de PDF**: Reportes con columnas: Resultado, Probabilidad, Fecha, Hora
 
-      - name: Compilar APK (release)
-        run: flutter build apk --release
+### Instalación
 
-      - name: Subir APK como artefacto
-        uses: actions/upload-artifact@v3
-        with:
-          name: app-release
-          path: build/app/outputs/flutter-apk/app-release.apk 
+```bash
+npm install
+```
+
+### Uso Rápido
+
+```javascript
+import TokioAI from './src/tokioai.js';
+
+// Crear instancia
+const tokio = new TokioAI({
+  batchSize: 10,
+  encryption: true,
+  autoAnalyze: true
+});
+
+// Capturar resultados
+tokio.captureResult(12);
+tokio.captureResult(35);
+
+// Análisis
+const analysis = tokio.analyzeBatch();
+console.log(analysis.suggestion);
+
+// Generar PDF
+await tokio.generatePDF('./reporte.pdf');
+```
+
+### Pruebas y Ejemplos
+
+```bash
+# Ejecutar tests
+npm test
+
+# Ejecutar ejemplo
+npm run example
+```
+
+### Documentación Completa
+
+Para documentación completa, ver [TOKIOAI_README.md](./TOKIOAI_README.md)
+
+## Workflows CI/CD
+
+Este proyecto incluye workflows para:
+- Flutter Build (Android APK)
+- Node.js Testing (múltiples versiones y sistemas operativos)
+
+## Licencia
+
+Ver [LICENSE](./LICENSE) para más detalles. 
