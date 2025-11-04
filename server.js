@@ -6,7 +6,7 @@
  */
 
 import express from 'express';
-import { WebSocketServer } from 'ws';
+import { WebSocket, WebSocketServer } from 'ws';
 import { createServer } from 'http';
 import winston from 'winston';
 import dotenv from 'dotenv';
@@ -223,7 +223,7 @@ wss.on('connection', (ws, req) => {
 function broadcast(message) {
   const messageStr = JSON.stringify(message);
   clients.forEach((client) => {
-    if (client.readyState === 1) { // WebSocket.OPEN
+    if (client.readyState === WebSocket.OPEN) {
       client.send(messageStr);
     }
   });
