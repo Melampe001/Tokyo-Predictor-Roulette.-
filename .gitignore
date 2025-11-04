@@ -3,15 +3,22 @@ node_modules/
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+package-lock.json
 
 # Build outputs
 dist/
 build/
 *.apk
+web-dashboard/dist/
 
 # Environment files
 .env
 .env.local
+.env.production
+
+# Logs
+logs/
+*.log
 
 # IDE
 .vscode/
@@ -35,6 +42,11 @@ temp/
 
 # Generated output files
 output/
+
+# Android keystore files
+*.jks
+*.keystore
+keystore.properties
 
 # Flutter specific
 .dart_tool/

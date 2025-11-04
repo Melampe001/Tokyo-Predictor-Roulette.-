@@ -1,0 +1,40 @@
+version: '3.8'
+
+services:
+  backend:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile
+    ports:
+      - "8080:8080"
+    environment:
+      - NODE_ENV=development
+      - PORT=8080
+      - BATCH_SIZE=10
+      - ENCRYPTION=true
+      - AUTO_ANALYZE=true
+      - LOG_LEVEL=info
+    volumes:
+      # Mount source code for development (comment out for production)
+      - ./src:/app/src
+      - ./server.js:/app/server.js
+      - ./logs:/app/logs
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:8080/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+
+  # Optional: Add a simple frontend proxy (uncomment if needed)
+  # dashboard:
+  #   build:
+  #     context: ./web-dashboard
+  #   ports:
+  #     - "3000:3000"
+  #   environment:
+  #     - VITE_WS_URL=ws://localhost:8080
+  #     - VITE_API_URL=http://localhost:8080
+  #   depends_on:
+  #     - backend
