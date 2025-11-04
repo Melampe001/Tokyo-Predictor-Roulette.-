@@ -7,6 +7,7 @@ function App() {
   const [connectionStatus, setConnectionStatus] = useState('disconnected');
   const [newValue, setNewValue] = useState('');
   const [statistics, setStatistics] = useState(null);
+  const [error, setError] = useState('');
   const wsRef = useRef(null);
 
   // WebSocket connection
@@ -81,10 +82,11 @@ function App() {
 
   const handleSubmitResult = (e) => {
     e.preventDefault();
+    setError('');
     const value = parseInt(newValue);
     
     if (isNaN(value)) {
-      alert('Por favor ingrese un número válido');
+      setError('Por favor ingrese un número válido');
       return;
     }
 
@@ -95,17 +97,18 @@ function App() {
       }));
       setNewValue('');
     } else {
-      alert('WebSocket no conectado');
+      setError('No conectado al servidor. Verifique la conexión.');
     }
   };
 
   const handleRequestAnalysis = () => {
+    setError('');
     if (wsRef.current && wsRef.current.readyState === WebSocket.OPEN) {
       wsRef.current.send(JSON.stringify({
         type: 'request-analysis'
       }));
     } else {
-      alert('WebSocket no conectado');
+      setError('No conectado al servidor. Verifique la conexión.');
     }
   };
 
@@ -136,6 +139,11 @@ function App() {
           {/* Input Section */}
           <div className="card">
             <h2>📝 Nuevo Resultado</h2>
+            {error && (
+              <div className="error-message">
+                ⚠️ {error}
+              </div>
+            )}
             <form onSubmit={handleSubmitResult} className="form">
               <input
                 type="number"
@@ -145,8 +153,13 @@ function App() {
                 className="input"
                 min="0"
                 max="36"
+                disabled={connectionStatus !== 'connected'}
               />
-              <button type="submit" className="btn btn-primary">
+              <button 
+                type="submit" 
+                className="btn btn-primary"
+                disabled={connectionStatus !== 'connected'}
+              >
                 Enviar Resultado
               </button>
             </form>
