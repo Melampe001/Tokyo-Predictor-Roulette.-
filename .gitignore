@@ -42,3 +42,13 @@ output/
 .flutter-plugins-dependencies
 .packages
 pubspec.lock
+
+# Android keystore and signing
+android/key.properties
+android/app/signing-key.jks
+*.jks
+*.keystore
+
+# Logs
+logs/
+*.log
