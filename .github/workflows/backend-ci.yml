@@ -1,0 +1,78 @@
+name: Backend CI
+
+on:
+  push:
+    branches: [ main, develop, 'feature/**' ]
+  pull_request:
+    branches: [ main, develop ]
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  test-and-build:
+    runs-on: ubuntu-latest
+    
+    strategy:
+      matrix:
+        node-version: [20]
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    - name: Setup Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ matrix.node-version }}
+        cache: 'npm'
+    
+    - name: Install dependencies
+      run: npm ci
+    
+    - name: Run tests
+      run: npm test
+      env:
+        NODE_ENV: test
+    
+    - name: Check server starts
+      run: |
+        timeout 10s npm start &
+        sleep 5
+        curl --fail http://localhost:8080/health || exit 1
+        kill %1
+      env:
+        NODE_ENV: test
+        PORT: 8080
+    
+    - name: Build web-dashboard
+      working-directory: ./web-dashboard
+      run: |
+        if [ -f "package.json" ]; then
+          npm ci
+          npm run build
+        else
+          echo "web-dashboard not yet created"
+        fi
+    
+    - name: Upload artifacts
+      uses: actions/upload-artifact@v4
+      if: success()
+      with:
+        name: build-artifacts-node-${{ matrix.node-version }}
+        path: |
+          web-dashboard/dist
+          logs/*.log
+        retention-days: 7
+    
+    - name: Docker build test
+      run: docker build -f docker/Dockerfile -t tokyo-predictor-backend:test .
+    
+    - name: Run Docker container test
+      run: |
+        docker run -d --name test-backend -p 8081:8080 tokyo-predictor-backend:test
+        sleep 5
+        curl --fail http://localhost:8081/health || exit 1
+        docker stop test-backend
+        docker rm test-backend
