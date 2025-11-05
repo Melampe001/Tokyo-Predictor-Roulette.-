@@ -32,6 +32,7 @@ coverage/
 tmp/
 temp/
 *.tmp
+test-apks/
 
 # Generated output files
 output/
