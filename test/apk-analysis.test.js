@@ -55,12 +55,16 @@ describe('APK Analysis Script', () => {
 
   describe('Script Execution', () => {
     test('shows usage when no arguments provided', async () => {
+      await expect(
+        execAsync(`bash ${SCRIPT_PATH}`, { encoding: 'utf8' })
+      ).rejects.toMatchObject({
+        code: 1
+      });
+      
+      // Verify the error message contains expected content
       try {
         await execAsync(`bash ${SCRIPT_PATH}`, { encoding: 'utf8' });
-        // Should not reach here
-        fail('Script should exit with error when no APK provided');
       } catch (error) {
-        expect(error.code).toBe(1);
         const output = error.stdout + error.stderr;
         expect(output).toContain('No APK file provided');
         expect(output).toContain('Usage:');
@@ -69,11 +73,17 @@ describe('APK Analysis Script', () => {
 
     test('shows error when APK file does not exist', async () => {
       const nonExistentAPK = path.join(TEST_DIR, 'nonexistent.apk');
+      
+      await expect(
+        execAsync(`bash ${SCRIPT_PATH} ${nonExistentAPK}`, { encoding: 'utf8' })
+      ).rejects.toMatchObject({
+        code: 1
+      });
+      
+      // Verify the error message contains expected content
       try {
         await execAsync(`bash ${SCRIPT_PATH} ${nonExistentAPK}`, { encoding: 'utf8' });
-        fail('Script should exit with error for non-existent file');
       } catch (error) {
-        expect(error.code).toBe(1);
         const output = error.stdout + error.stderr;
         expect(output).toContain('APK file not found');
       }
@@ -90,8 +100,8 @@ describe('APK Analysis Script', () => {
     });
 
     test('analyzes mock APK file structure', async () => {
-      // Run with stderr redirected to /dev/null to ignore certificate warnings
-      const { stdout } = await execAsync(`bash ${SCRIPT_PATH} ${mockAPKPath} 2>/dev/null || true`);
+      // Run script and capture output (script should succeed)
+      const { stdout } = await execAsync(`bash ${SCRIPT_PATH} ${mockAPKPath} 2>/dev/null`);
       
       // Check that analysis started
       expect(stdout).toContain('Tokyo Predictor APK Analysis');
@@ -107,7 +117,7 @@ describe('APK Analysis Script', () => {
     });
 
     test('generates file hashes', async () => {
-      const { stdout } = await execAsync(`bash ${SCRIPT_PATH} ${mockAPKPath} 2>/dev/null || true`);
+      const { stdout } = await execAsync(`bash ${SCRIPT_PATH} ${mockAPKPath} 2>/dev/null`);
       
       // Should generate MD5 hash
       expect(stdout).toContain('File Hash (MD5)');
@@ -119,7 +129,7 @@ describe('APK Analysis Script', () => {
     });
 
     test('extracts and analyzes APK contents', async () => {
-      const { stdout } = await execAsync(`bash ${SCRIPT_PATH} ${mockAPKPath} 2>/dev/null || true`);
+      const { stdout } = await execAsync(`bash ${SCRIPT_PATH} ${mockAPKPath} 2>/dev/null`);
       
       // Check that extraction occurred
       expect(stdout).toContain('Extracted to:');
@@ -129,7 +139,7 @@ describe('APK Analysis Script', () => {
     });
 
     test('provides security recommendations', async () => {
-      const { stdout } = await execAsync(`bash ${SCRIPT_PATH} ${mockAPKPath} 2>/dev/null || true`);
+      const { stdout } = await execAsync(`bash ${SCRIPT_PATH} ${mockAPKPath} 2>/dev/null`);
       
       // Should include security checks section
       expect(stdout).toContain('Basic Security Checks');
