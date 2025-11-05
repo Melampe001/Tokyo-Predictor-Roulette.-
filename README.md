@@ -70,6 +70,10 @@ Dashboard disponible en: `http://localhost:3000`
 ### Docker (Recomendado para Producción)
 
 ```bash
+# Crear archivo .env desde el ejemplo
+cp .env.example .env
+# Editar .env con tu configuración
+
 # Ejecutar backend y dashboard juntos
 docker-compose up -d
 
