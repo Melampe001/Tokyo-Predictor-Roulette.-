@@ -258,6 +258,9 @@ npm run test:legacy
 # Ejecutar tests del backend (Jest)
 npm test
 
+# Ejecutar tests de análisis de APK
+npm run test:apk
+
 # Ejecutar con cobertura
 npm test -- --coverage
 ```

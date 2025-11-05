@@ -9,6 +9,7 @@
     "dev": "nodemon server.js",
     "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js",
     "test:legacy": "node test/test.js",
+    "test:apk": "node --experimental-vm-modules node_modules/jest/bin/jest.js test/apk-analysis.test.js",
     "lint": "echo 'Lint check passed (configure ESLint if needed)'",
     "build": "echo 'Build complete (no build step required for Node.js)'",
     "example": "node examples/usage.js"
