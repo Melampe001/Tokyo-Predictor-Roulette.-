@@ -20,6 +20,16 @@ const __dirname = path.dirname(__filename);
 const SCRIPT_PATH = path.join(__dirname, '..', 'scripts', 'analyze_apk.sh');
 const TEST_DIR = path.join(__dirname, '..', 'test-apks');
 
+/**
+ * Safely quote a shell argument to prevent injection
+ * @param {string} arg - The argument to quote
+ * @returns {string} - The safely quoted argument
+ */
+function shellQuote(arg) {
+  // Escape single quotes and wrap in single quotes
+  return `'${arg.replace(/'/g, "'\\''")}'`;
+}
+
 describe('APK Analysis Script', () => {
   
   beforeAll(() => {
@@ -55,15 +65,17 @@ describe('APK Analysis Script', () => {
 
   describe('Script Execution', () => {
     test('shows usage when no arguments provided', async () => {
+      const cmd = `bash ${shellQuote(SCRIPT_PATH)}`;
+      
       await expect(
-        execAsync(`bash ${SCRIPT_PATH}`, { encoding: 'utf8' })
+        execAsync(cmd, { encoding: 'utf8' })
       ).rejects.toMatchObject({
         code: 1
       });
       
       // Verify the error message contains expected content
       try {
-        await execAsync(`bash ${SCRIPT_PATH}`, { encoding: 'utf8' });
+        await execAsync(cmd, { encoding: 'utf8' });
       } catch (error) {
         const output = error.stdout + error.stderr;
         expect(output).toContain('No APK file provided');
@@ -73,16 +85,17 @@ describe('APK Analysis Script', () => {
 
     test('shows error when APK file does not exist', async () => {
       const nonExistentAPK = path.join(TEST_DIR, 'nonexistent.apk');
+      const cmd = `bash ${shellQuote(SCRIPT_PATH)} ${shellQuote(nonExistentAPK)}`;
       
       await expect(
-        execAsync(`bash ${SCRIPT_PATH} ${nonExistentAPK}`, { encoding: 'utf8' })
+        execAsync(cmd, { encoding: 'utf8' })
       ).rejects.toMatchObject({
         code: 1
       });
       
       // Verify the error message contains expected content
       try {
-        await execAsync(`bash ${SCRIPT_PATH} ${nonExistentAPK}`, { encoding: 'utf8' });
+        await execAsync(cmd, { encoding: 'utf8' });
       } catch (error) {
         const output = error.stdout + error.stderr;
         expect(output).toContain('APK file not found');
@@ -101,7 +114,8 @@ describe('APK Analysis Script', () => {
 
     test('analyzes mock APK file structure', async () => {
       // Run script and capture output (script should succeed)
-      const { stdout } = await execAsync(`bash ${SCRIPT_PATH} ${mockAPKPath} 2>/dev/null`);
+      const cmd = `bash ${shellQuote(SCRIPT_PATH)} ${shellQuote(mockAPKPath)} 2>/dev/null`;
+      const { stdout } = await execAsync(cmd);
       
       // Check that analysis started
       expect(stdout).toContain('Tokyo Predictor APK Analysis');
@@ -117,7 +131,8 @@ describe('APK Analysis Script', () => {
     });
 
     test('generates file hashes', async () => {
-      const { stdout } = await execAsync(`bash ${SCRIPT_PATH} ${mockAPKPath} 2>/dev/null`);
+      const cmd = `bash ${shellQuote(SCRIPT_PATH)} ${shellQuote(mockAPKPath)} 2>/dev/null`;
+      const { stdout } = await execAsync(cmd);
       
       // Should generate MD5 hash
       expect(stdout).toContain('File Hash (MD5)');
@@ -129,7 +144,8 @@ describe('APK Analysis Script', () => {
     });
 
     test('extracts and analyzes APK contents', async () => {
-      const { stdout } = await execAsync(`bash ${SCRIPT_PATH} ${mockAPKPath} 2>/dev/null`);
+      const cmd = `bash ${shellQuote(SCRIPT_PATH)} ${shellQuote(mockAPKPath)} 2>/dev/null`;
+      const { stdout } = await execAsync(cmd);
       
       // Check that extraction occurred
       expect(stdout).toContain('Extracted to:');
@@ -139,7 +155,8 @@ describe('APK Analysis Script', () => {
     });
 
     test('provides security recommendations', async () => {
-      const { stdout } = await execAsync(`bash ${SCRIPT_PATH} ${mockAPKPath} 2>/dev/null`);
+      const cmd = `bash ${shellQuote(SCRIPT_PATH)} ${shellQuote(mockAPKPath)} 2>/dev/null`;
+      const { stdout } = await execAsync(cmd);
       
       // Should include security checks section
       expect(stdout).toContain('Basic Security Checks');
