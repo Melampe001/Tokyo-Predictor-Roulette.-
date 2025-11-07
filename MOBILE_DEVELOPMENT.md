@@ -78,10 +78,7 @@ Generate and copy your SSH key for GitHub authentication:
 # Generate SSH key (if you don't have one)
 ssh-keygen -t ed25519 -C "your_email@example.com"
 
-# Install Termux API (if not already installed)
-pkg install termux-api
-
-# Copy public key to clipboard
+# Copy public key to clipboard (requires termux-api installed earlier)
 termux-clipboard-set "$(cat ~/.ssh/id_ed25519.pub)"
 
 # Or display it to copy manually
