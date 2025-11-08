@@ -258,8 +258,8 @@ router.post('/process', authenticate, async (req, res) => {
         const durationDays = subscription.billingCycle === 'yearly' ? 365 : 30;
         subscription.activate(durationDays);
 
-        // Update user premium status
-        const isPremium = subscription.tier !== 'free';
+        // Update user premium status (basic tier is free, advanced and premium are paid)
+        const isPremium = subscription.tier !== 'basic';
         userStore.update(payment.userId, {
           isPremium,
           subscriptionId: subscription.id

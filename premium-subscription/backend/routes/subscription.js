@@ -18,23 +18,20 @@ const router = express.Router();
 
 /**
  * Pricing configuration
+ * Basic tier is FREE, no billing required
  */
 const PRICING = {
-  [SubscriptionTiers.FREE]: {
+  [SubscriptionTiers.BASIC]: {
     monthly: 0,
     yearly: 0
   },
-  [SubscriptionTiers.BASIC]: {
+  [SubscriptionTiers.ADVANCED]: {
     monthly: 9.99,
     yearly: 99.99
   },
   [SubscriptionTiers.PREMIUM]: {
     monthly: 19.99,
     yearly: 199.99
-  },
-  [SubscriptionTiers.ENTERPRISE]: {
-    monthly: 49.99,
-    yearly: 499.99
   }
 };
 
@@ -70,11 +67,11 @@ router.get('/me', authenticate, async (req, res) => {
   try {
     let subscription = subscriptionStore.findByUserId(req.user.id);
 
-    // Create free subscription if none exists
+    // Create basic (free) subscription if none exists
     if (!subscription) {
       subscription = subscriptionStore.create({
         userId: req.user.id,
-        tier: SubscriptionTiers.FREE,
+        tier: SubscriptionTiers.BASIC,
         status: SubscriptionStatus.ACTIVE,
         price: 0
       });
@@ -298,31 +295,26 @@ router.post('/renew', authenticate, async (req, res) => {
  */
 function getFeaturesByTier(tier) {
   const features = {
-    [SubscriptionTiers.FREE]: [
+    [SubscriptionTiers.BASIC]: [
       'Basic predictions',
       'Limited analysis history',
-      'Standard support'
+      'Standard support',
+      'No billing required'
     ],
-    [SubscriptionTiers.BASIC]: [
-      'All free features',
+    [SubscriptionTiers.ADVANCED]: [
+      'All basic features',
       'Advanced predictions',
       'Extended analysis history (30 days)',
+      'Real-time updates',
       'Priority support'
     ],
     [SubscriptionTiers.PREMIUM]: [
-      'All basic features',
-      'Real-time predictions',
+      'All advanced features',
       'Unlimited analysis history',
-      'Advanced analytics',
+      'Advanced analytics dashboard',
       'Premium support',
-      'Export to PDF'
-    ],
-    [SubscriptionTiers.ENTERPRISE]: [
-      'All premium features',
-      'Custom integrations',
-      'Dedicated support',
-      'API access',
-      'White-label options'
+      'Export to PDF',
+      'Custom integrations'
     ]
   };
 

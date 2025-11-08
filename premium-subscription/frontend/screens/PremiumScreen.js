@@ -36,21 +36,23 @@ const PremiumScreen = ({ navigation, user, onSubscribe }) => {
       // Mock data for demonstration
       const mockTiers = [
         {
-          tier: 'free',
+          tier: 'basic',
           pricing: { monthly: 0, yearly: 0 },
           features: [
             'Basic predictions',
             'Limited analysis history',
-            'Standard support'
+            'Standard support',
+            'No billing required'
           ]
         },
         {
-          tier: 'basic',
+          tier: 'advanced',
           pricing: { monthly: 9.99, yearly: 99.99 },
           features: [
-            'All free features',
+            'All basic features',
             'Advanced predictions',
             'Extended analysis history (30 days)',
+            'Real-time updates',
             'Priority support'
           ]
         },
@@ -58,23 +60,12 @@ const PremiumScreen = ({ navigation, user, onSubscribe }) => {
           tier: 'premium',
           pricing: { monthly: 19.99, yearly: 199.99 },
           features: [
-            'All basic features',
-            'Real-time predictions',
+            'All advanced features',
             'Unlimited analysis history',
-            'Advanced analytics',
+            'Advanced analytics dashboard',
             'Premium support',
-            'Export to PDF'
-          ]
-        },
-        {
-          tier: 'enterprise',
-          pricing: { monthly: 49.99, yearly: 499.99 },
-          features: [
-            'All premium features',
-            'Custom integrations',
-            'Dedicated support',
-            'API access',
-            'White-label options'
+            'Export to PDF',
+            'Custom integrations'
           ]
         }
       ];
@@ -89,8 +80,8 @@ const PremiumScreen = ({ navigation, user, onSubscribe }) => {
   };
 
   const handleSelectTier = (tier) => {
-    if (tier.tier === 'free') {
-      Alert.alert('Info', 'You are already on the free tier');
+    if (tier.tier === 'basic') {
+      Alert.alert('Info', 'You are already on the free Basic tier. Select Advanced or Premium to upgrade.');
       return;
     }
     setSelectedTier(tier);

@@ -253,29 +253,29 @@ describe('Premium Subscription System', () => {
         expect(response.body.data).toHaveProperty('status');
       });
 
-      test('should create free subscription if none exists', async () => {
+      test('should create basic (free) subscription if none exists', async () => {
         const response = await request(app)
           .get('/api/subscriptions/me')
           .set('Authorization', `Bearer ${token}`);
 
-        expect(response.body.data.tier).toBe('free');
+        expect(response.body.data.tier).toBe('basic');
         expect(response.body.data.status).toBe('active');
       });
     });
 
     describe('POST /api/subscriptions/create', () => {
-      test('should create premium subscription', async () => {
+      test('should create advanced subscription', async () => {
         const response = await request(app)
           .post('/api/subscriptions/create')
           .set('Authorization', `Bearer ${token}`)
           .send({
-            tier: 'premium',
+            tier: 'advanced',
             billingCycle: 'monthly'
           });
 
         expect(response.status).toBe(201);
         expect(response.body.success).toBe(true);
-        expect(response.body.data.tier).toBe('premium');
+        expect(response.body.data.tier).toBe('advanced');
         expect(response.body.data.billingCycle).toBe('monthly');
         expect(response.body.data.status).toBe('pending');
       });

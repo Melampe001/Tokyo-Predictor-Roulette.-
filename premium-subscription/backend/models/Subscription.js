@@ -6,10 +6,9 @@
  */
 
 export const SubscriptionTiers = {
-  FREE: 'free',
-  BASIC: 'basic',
-  PREMIUM: 'premium',
-  ENTERPRISE: 'enterprise'
+  BASIC: 'basic',      // Free tier
+  ADVANCED: 'advanced', // Paid tier
+  PREMIUM: 'premium'    // Higher paid tier
 };
 
 export const SubscriptionStatus = {
@@ -24,7 +23,7 @@ export class Subscription {
   constructor(data = {}) {
     this.id = data.id || null;
     this.userId = data.userId || null;
-    this.tier = data.tier || SubscriptionTiers.FREE;
+    this.tier = data.tier || SubscriptionTiers.BASIC;
     this.status = data.status || SubscriptionStatus.PENDING;
     this.price = data.price || 0;
     this.currency = data.currency || 'USD';
