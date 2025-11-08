@@ -88,7 +88,7 @@ class PaymentStore {
   }
 }
 
-export const paymentStore = new PaymentStore();
+const paymentStore = new PaymentStore();
 
 /**
  * GET /api/payment/methods
