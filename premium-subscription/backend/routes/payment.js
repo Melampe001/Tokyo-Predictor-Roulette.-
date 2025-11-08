@@ -3,6 +3,13 @@
  * 
  * Handles payment processing for subscriptions
  * This is a mock implementation - in production, integrate with Stripe, PayPal, etc.
+ * 
+ * SECURITY NOTE: For production deployment:
+ * - Add rate limiting to prevent abuse (especially on payment endpoints)
+ * - Use a PCI-compliant payment processor
+ * - Never store full credit card numbers or CVV codes
+ * - Implement fraud detection
+ * - Add webhook signature verification for payment gateway callbacks
  */
 
 import express from 'express';

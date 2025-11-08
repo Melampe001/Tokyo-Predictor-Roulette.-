@@ -175,7 +175,14 @@ export function optionalAuth(req, res, next) {
 
 /**
  * Simple password hashing utility
- * In production, use bcrypt or similar
+ * 
+ * WARNING: This uses SHA-256 for demonstration purposes only!
+ * For production, use bcrypt, argon2, or scrypt:
+ * 
+ * Example with bcrypt:
+ * import bcrypt from 'bcrypt';
+ * const hash = await bcrypt.hash(password, 10);
+ * const isValid = await bcrypt.compare(password, hash);
  */
 export function hashPassword(password) {
   return crypto

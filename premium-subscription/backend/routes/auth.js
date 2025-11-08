@@ -2,6 +2,12 @@
  * Authentication Routes
  * 
  * Handles user registration, login, logout, and profile management
+ * 
+ * SECURITY NOTE: For production deployment:
+ * - Add rate limiting to prevent brute force attacks (see PAYMENT_INTEGRATION.md)
+ * - Replace SHA-256 password hashing with bcrypt
+ * - Implement CAPTCHA for registration/login
+ * - Add email verification
  */
 
 import express from 'express';

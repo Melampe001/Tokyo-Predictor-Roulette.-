@@ -2,6 +2,11 @@
  * Subscription Routes
  * 
  * Handles subscription management, upgrades, and status checks
+ * 
+ * SECURITY NOTE: For production deployment:
+ * - Add rate limiting to prevent abuse
+ * - Validate subscription changes don't bypass payment
+ * - Implement proper authorization checks for enterprise features
  */
 
 import express from 'express';
