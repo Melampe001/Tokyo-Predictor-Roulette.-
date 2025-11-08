@@ -106,8 +106,8 @@ navigation.navigate('Premium');
 | Tier | Monthly | Yearly | Features |
 |------|---------|--------|----------|
 | **Basic** | FREE | FREE | Basic predictions, Limited history, Standard support, No billing required |
-| **Advanced** | $9.99 | $99.99 | All basic features + Advanced predictions, Real-time updates, 30-day history, Priority support |
-| **Premium** | $19.99 | $199.99 | All advanced features + Unlimited history, Advanced analytics dashboard, Premium support, PDF export, Custom integrations |
+| **Advanced** | $99 MXN | $990 MXN | All basic features + Advanced predictions, Real-time updates, 30-day history, Priority support |
+| **Premium** | $149 MXN | $1,490 MXN | All advanced features + Unlimited history, Advanced analytics dashboard, Premium support, PDF export, Custom integrations |
 
 ## Testing
 

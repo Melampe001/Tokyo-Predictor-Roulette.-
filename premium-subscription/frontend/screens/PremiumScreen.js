@@ -33,7 +33,7 @@ const PremiumScreen = ({ navigation, user, onSubscribe }) => {
       // const response = await fetch('/api/subscriptions/tiers');
       // const data = await response.json();
       
-      // Mock data for demonstration
+      // Mock data for demonstration (prices in Mexican Pesos - MXN)
       const mockTiers = [
         {
           tier: 'basic',
@@ -47,7 +47,7 @@ const PremiumScreen = ({ navigation, user, onSubscribe }) => {
         },
         {
           tier: 'advanced',
-          pricing: { monthly: 9.99, yearly: 99.99 },
+          pricing: { monthly: 99, yearly: 990 },
           features: [
             'All basic features',
             'Advanced predictions',
@@ -58,7 +58,7 @@ const PremiumScreen = ({ navigation, user, onSubscribe }) => {
         },
         {
           tier: 'premium',
-          pricing: { monthly: 19.99, yearly: 199.99 },
+          pricing: { monthly: 149, yearly: 1490 },
           features: [
             'All advanced features',
             'Unlimited analysis history',

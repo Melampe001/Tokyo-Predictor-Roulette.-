@@ -17,7 +17,7 @@ import { authenticate, requirePremium } from '../middleware/auth.js';
 const router = express.Router();
 
 /**
- * Pricing configuration
+ * Pricing configuration (in Mexican Pesos - MXN)
  * Basic tier is FREE, no billing required
  */
 const PRICING = {
@@ -26,12 +26,12 @@ const PRICING = {
     yearly: 0
   },
   [SubscriptionTiers.ADVANCED]: {
-    monthly: 9.99,
-    yearly: 99.99
+    monthly: 99,
+    yearly: 990
   },
   [SubscriptionTiers.PREMIUM]: {
-    monthly: 19.99,
-    yearly: 199.99
+    monthly: 149,
+    yearly: 1490
   }
 };
 

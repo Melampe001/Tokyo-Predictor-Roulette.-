@@ -26,7 +26,7 @@ export class Subscription {
     this.tier = data.tier || SubscriptionTiers.BASIC;
     this.status = data.status || SubscriptionStatus.PENDING;
     this.price = data.price || 0;
-    this.currency = data.currency || 'USD';
+    this.currency = data.currency || 'MXN';
     this.billingCycle = data.billingCycle || 'monthly'; // monthly, yearly
     this.startDate = data.startDate || new Date().toISOString();
     this.endDate = data.endDate || null;
