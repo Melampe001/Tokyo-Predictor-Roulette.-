@@ -16,6 +16,8 @@ TokioAI es un módulo de agente IA diseñado para análisis predictivo, integrac
 - ✅ **Backend REST + WebSocket**: Servidor de producción con Express
 - ✅ **Web Dashboard**: Interfaz web en tiempo real con React
 - ✅ **Docker Ready**: Contenedores para desarrollo y producción
+- ✅ **Mobile Development**: Soporte para React Native y Flutter
+- ✅ **Termux Compatible**: Desarrollo directo en dispositivos Android
 
 ## 📦 Instalación
 
@@ -258,6 +260,9 @@ npm run test:legacy
 # Ejecutar tests del backend (Jest)
 npm test
 
+# Ejecutar tests de análisis de APK
+npm run test:apk
+
 # Ejecutar con cobertura
 npm test -- --coverage
 ```
@@ -298,6 +303,34 @@ El script proporciona:
 - Checks básicos de seguridad
 
 **Requisitos**: `aapt` (Android SDK build-tools), `unzip`, `openssl`
+
+## 📱 Desarrollo Móvil
+
+Para desarrollo en dispositivos móviles (React Native, Flutter, Termux), consulta la guía completa:
+
+**[📖 Guía de Desarrollo Móvil](./MOBILE_DEVELOPMENT.md)**
+
+La guía incluye:
+- Configuración de React Native para Android (`npx react-native run-android`)
+- Setup de Termux en dispositivos Android
+- Configuración de SSH y Termux API (`pkg install termux-api`, `termux-clipboard-set`)
+- Desarrollo con Flutter
+- Troubleshooting para entornos móviles
+
+### Quick Start - Termux
+
+```bash
+# Instalar herramientas esenciales
+pkg install termux-api nodejs git openssh
+
+# Copiar clave SSH al portapapeles
+termux-clipboard-set "$(cat ~/.ssh/id_ed25519.pub)"
+
+# Clonar y configurar proyecto
+git clone git@github.com:Melampe001/Tokyo-Predictor-Roulette.-.git
+cd Tokyo-Predictor-Roulette.-
+npm install
+```
 
 ## 🔐 CI/CD y Secretos
 
