@@ -2,6 +2,8 @@
 
 Proyecto de análisis predictivo para casino privado Android con módulo de IA.
 
+> **🆘 ¿Necesitas ayuda?** Consulta la [Guía de Ayuda Completa (HELP.md)](./HELP.md) para inicio rápido, solución de problemas y ejemplos.
+
 ## 🎰 TokioAI - Módulo de Análisis Predictivo
 
 TokioAI es un módulo de agente IA diseñado para análisis predictivo, integración dinámica de RNG y seguridad reforzada.
@@ -469,11 +471,53 @@ npm run dev
 4. Push a la rama (`git push origin feature/AmazingFeature`)
 5. Abre un Pull Request
 
+## 🆘 Ayuda y Soporte
+
+### Guía Completa de Ayuda
+
+**📖 [Ver HELP.md](./HELP.md)** - Guía completa con:
+- Inicio rápido en 3 pasos
+- Preguntas frecuentes (FAQ)
+- Solución de problemas comunes
+- Ejemplos de uso detallados
+- Guía de desarrollo
+- Arquitectura del sistema
+
+### Ayuda Rápida
+
+**¿Primer uso?**
+```bash
+npm install && npm start
+# Servidor en http://localhost:8080
+```
+
+**¿Problemas al iniciar?**
+```bash
+rm -rf node_modules package-lock.json
+npm install
+npm test
+```
+
+**¿Verificar que todo funciona?**
+```bash
+npm test                           # Debe pasar 36/36 tests
+curl http://localhost:8080/health  # Debe retornar status: healthy
+```
+
+**¿Necesitas ejemplos de código?**  
+Ver [HELP.md - Sección Ejemplos](./HELP.md#-ejemplos-de-uso)
+
+**¿Problemas con Docker?**  
+Ver [DOCKER_TROUBLESHOOTING.md](./DOCKER_TROUBLESHOOTING.md)
+
+**¿Dudas sobre TokioAI?**  
+Ver [TOKIOAI_README.md](./TOKIOAI_README.md)
+
 ## 📝 Issues Conocidos y TODOs
 
 Ver los issues abiertos en GitHub para:
 
-- [ ] Integrar implementación real de TokioAI (reemplazar adapter stub)
+- [ ] ~~Integrar implementación real de TokioAI~~ ✅ **COMPLETADO** (ya usa implementación real)
 - [ ] Añadir ejemplo de integración con cliente Flutter
 - [ ] Configurar despliegue automatizado a Play Store con Fastlane
 - [ ] Añadir autenticación y autorización
