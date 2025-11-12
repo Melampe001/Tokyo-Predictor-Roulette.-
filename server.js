@@ -95,6 +95,65 @@ app.get('/health', (req, res) => {
 });
 
 /**
+ * GET /check - Simple readiness check endpoint
+ * Returns 200 OK if service is ready to handle requests
+ * Useful for Kubernetes readiness probes and load balancers
+ */
+app.get('/check', (req, res) => {
+  res.status(200).json({
+    status: 'ok',
+    ready: true,
+    timestamp: new Date().toISOString()
+  });
+});
+
+/**
+ * GET /status - Comprehensive status endpoint
+ * Returns detailed system information including TokioAI status
+ */
+app.get('/status', (req, res) => {
+  try {
+    const tokioStats = tokioAI.getStatistics();
+    const memUsage = process.memoryUsage();
+    
+    res.json({
+      status: 'operational',
+      timestamp: new Date().toISOString(),
+      system: {
+        uptime: process.uptime(),
+        environment: NODE_ENV,
+        nodeVersion: process.version,
+        platform: process.platform
+      },
+      memory: {
+        heapUsed: Math.round(memUsage.heapUsed / 1024 / 1024),
+        heapTotal: Math.round(memUsage.heapTotal / 1024 / 1024),
+        rss: Math.round(memUsage.rss / 1024 / 1024),
+        unit: 'MB'
+      },
+      tokioai: {
+        resultsCount: tokioStats.currentResults,
+        totalResults: tokioStats.totalResults,
+        totalAnalyses: tokioStats.totalAnalyses,
+        lastAnalysis: tokioStats.lastAnalysis,
+        uptime: tokioStats.uptime
+      },
+      websocket: {
+        connectedClients: clients.size,
+        serverReady: wss.readyState === 1
+      }
+    });
+  } catch (error) {
+    logger.error('Error fetching status:', error);
+    res.status(500).json({
+      status: 'error',
+      message: 'Failed to fetch system status',
+      error: error.message
+    });
+  }
+});
+
+/**
  * POST /api/result - Submit a new result
  */
 app.post('/api/result', async (req, res) => {

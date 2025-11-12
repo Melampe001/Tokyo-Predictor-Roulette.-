@@ -128,7 +128,28 @@ const tokio = new TokioAI({
 #### Health Check
 ```bash
 GET /health
-# Respuesta: { status: "healthy", timestamp: "...", uptime: 123 }
+# Respuesta: { status: "healthy", timestamp: "...", uptime: 123, environment: "production" }
+```
+
+#### Readiness Check
+```bash
+GET /check
+# Respuesta: { status: "ok", ready: true, timestamp: "..." }
+# Útil para: Kubernetes readiness probes, load balancers, monitoring
+```
+
+#### System Status
+```bash
+GET /status
+# Respuesta completa con información del sistema:
+# {
+#   status: "operational",
+#   timestamp: "...",
+#   system: { uptime, environment, nodeVersion, platform },
+#   memory: { heapUsed, heapTotal, rss (en MB) },
+#   tokioai: { resultsCount, totalResults, totalAnalyses, lastAnalysis, uptime },
+#   websocket: { connectedClients, serverReady }
+# }
 ```
 
 #### Enviar Resultado
