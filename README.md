@@ -379,6 +379,50 @@ tokio.loadEncrypted('./datos.enc');
 
 Para documentación completa del módulo TokioAI, ver [TOKIOAI_README.md](./TOKIOAI_README.md)
 
+## 📱 Integración con Aplicaciones Móviles
+
+TokioAI incluye ejemplos completos de integración con Flutter y React Native.
+
+### Flutter
+
+Ejemplo completo con REST API y WebSocket en `examples/flutter-integration.dart`:
+
+```dart
+final client = TokioAIClient(
+  baseUrl: 'http://your-server:8080',
+  wsUrl: 'ws://your-server:8080',
+);
+
+// Submit result
+await client.submitResult(12);
+
+// Get analysis
+final analysis = await client.getAnalysis();
+print(analysis['data']['suggestion']);
+```
+
+### React Native
+
+Componente completo con UI en `examples/react-native-integration.js`:
+
+```javascript
+import TokioAIApp from './examples/react-native-integration';
+
+const App = () => {
+  return <TokioAIApp />;
+};
+```
+
+### Características de los Ejemplos
+
+- ✅ Cliente REST API completo
+- ✅ Integración WebSocket en tiempo real
+- ✅ Componentes UI listos para usar
+- ✅ Manejo de errores y estados de carga
+- ✅ Documentación detallada
+
+Ver documentación completa en [examples/README.md](./examples/README.md)
+
 ## 🐳 Despliegue en Producción
 
 ### Docker
@@ -517,8 +561,9 @@ Ver [TOKIOAI_README.md](./TOKIOAI_README.md)
 
 Ver los issues abiertos en GitHub para:
 
-- [ ] ~~Integrar implementación real de TokioAI~~ ✅ **COMPLETADO** (ya usa implementación real)
-- [ ] Añadir ejemplo de integración con cliente Flutter
+- [x] ~~Integrar implementación real de TokioAI~~ ✅ **COMPLETADO**
+- [x] ~~Añadir ejemplo de integración con cliente Flutter~~ ✅ **COMPLETADO**
+- [x] ~~Añadir ejemplo de integración con React Native~~ ✅ **COMPLETADO**
 - [ ] Configurar despliegue automatizado a Play Store con Fastlane
 - [ ] Añadir autenticación y autorización
 - [ ] Mejorar cobertura de tests
