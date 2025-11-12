@@ -93,11 +93,9 @@ class _MainScreenState extends State<MainScreen> {
                         fontWeight: FontWeight.bold,
                         color: _currentNumber == null
                             ? Colors.grey
-                            : _rouletteService.isRed(_currentNumber!)
-                                ? Colors.red
-                                : _rouletteService.isBlack(_currentNumber!)
-                                    ? Colors.black
-                                    : Colors.green,
+                            : _history.isNotEmpty
+                                ? _history[0].color
+                                : Colors.grey,
                       ),
                     ),
                     const SizedBox(height: 16),
@@ -197,11 +195,7 @@ class _MainScreenState extends State<MainScreen> {
                       width: 50,
                       margin: const EdgeInsets.only(right: 8),
                       decoration: BoxDecoration(
-                        color: _rouletteService.isRed(result.number)
-                            ? Colors.red
-                            : _rouletteService.isBlack(result.number)
-                                ? Colors.black
-                                : Colors.green,
+                        color: result.color,
                         borderRadius: BorderRadius.circular(8),
                       ),
                       child: Center(

@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:tokyo_roulette_predicciones/services/roulette_service.dart';
 import 'package:tokyo_roulette_predicciones/models/roulette_result.dart';
@@ -99,6 +100,36 @@ void main() {
       final restored = RouletteResult.fromJson(json);
       expect(restored.number, 15);
       expect(restored.type, 'european');
+    });
+
+    test('color property returns correct colors', () {
+      // Test red number
+      final redResult = RouletteResult(
+        number: 1,
+        timestamp: DateTime.now(),
+      );
+      expect(redResult.color, Colors.red);
+
+      // Test black number
+      final blackResult = RouletteResult(
+        number: 2,
+        timestamp: DateTime.now(),
+      );
+      expect(blackResult.color, Colors.black);
+
+      // Test green number (0)
+      final greenResult = RouletteResult(
+        number: 0,
+        timestamp: DateTime.now(),
+      );
+      expect(greenResult.color, Colors.green);
+
+      // Test green number (00 - represented as 37)
+      final greenResult2 = RouletteResult(
+        number: 37,
+        timestamp: DateTime.now(),
+      );
+      expect(greenResult2.color, Colors.green);
     });
   });
 }
