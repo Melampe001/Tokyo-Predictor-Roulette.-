@@ -1,0 +1,58 @@
+name: tokyo_roulette_predicciones
+description: Simulador multiplataforma para predicciones en ruleta con modelo freemium
+publish_to: 'none'
+version: 1.0.0+1
+
+environment:
+  sdk: '>=3.0.0 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+  
+  # Core dependencies
+  cupertino_icons: ^1.0.6
+  
+  # Payments and monetization
+  flutter_stripe: ^10.0.0
+  in_app_purchase: ^3.2.0
+  
+  # Firebase
+  firebase_core: ^2.24.2
+  firebase_remote_config: ^4.3.12
+  cloud_firestore: ^4.15.3
+  firebase_auth: ^4.16.0
+  
+  # Internationalization
+  intl: ^0.18.1
+  
+  # Device info
+  device_info_plus: ^9.1.2
+  
+  # URL launcher for feedback
+  url_launcher: ^6.2.4
+  
+  # Local storage
+  shared_preferences: ^2.2.2
+  
+  # Charts
+  fl_chart: ^0.66.0
+  
+  # HTTP requests
+  http: ^1.2.0
+  
+  # State management
+  provider: ^6.1.1
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^3.0.0
+
+flutter:
+  uses-material-design: true
+  
+  # Uncomment and add assets as needed
+  # assets:
+  #   - assets/images/
+  #   - assets/icons/
