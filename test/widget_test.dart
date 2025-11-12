@@ -29,6 +29,14 @@ void main() {
 
     // Should show validation message
     expect(find.text('Por favor ingrese un email válido'), findsOneWidget);
+    
+    // Try with invalid email format
+    await tester.enterText(find.byType(TextField), 'notanemail');
+    await tester.tap(find.text('Comenzar'));
+    await tester.pump();
+    
+    // Should still show validation message
+    expect(find.text('Por favor ingrese un email válido'), findsOneWidget);
   });
 
   testWidgets('LoginScreen accepts valid email and navigates', (WidgetTester tester) async {

@@ -12,8 +12,16 @@ class _LoginScreenState extends State<LoginScreen> {
   final TextEditingController _emailController = TextEditingController();
   bool _isLoading = false;
 
+  bool _isValidEmail(String email) {
+    // More robust email validation using regex
+    final emailRegex = RegExp(
+      r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$',
+    );
+    return emailRegex.hasMatch(email);
+  }
+
   Future<void> _handleLogin() async {
-    if (_emailController.text.isEmpty || !_emailController.text.contains('@')) {
+    if (_emailController.text.isEmpty || !_isValidEmail(_emailController.text.trim())) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Por favor ingrese un email válido')),
       );
