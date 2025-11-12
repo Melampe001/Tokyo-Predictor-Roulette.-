@@ -54,7 +54,6 @@ jobs:
     
     - name: Run Jest tests
       run: npm test
-      continue-on-error: true
     
     - name: Upload test results
       uses: actions/upload-artifact@v4
