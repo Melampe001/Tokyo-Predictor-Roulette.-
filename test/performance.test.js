@@ -149,5 +149,52 @@ describe('Performance Tests', () => {
       
       expect(executionTime).toBeLessThan(200); // 10 analyses should complete in less than 200ms
     });
+
+    test('Analysis caching improves performance for repeated calls', () => {
+      const tokioAI = new TokioAI({ batchSize: 50, encryption: false });
+      
+      // Generate 100 results
+      for (let i = 0; i < 100; i++) {
+        tokioAI.captureResult(Math.floor(Math.random() * 37));
+      }
+      
+      // First analysis (uncached)
+      const firstStartTime = performance.now();
+      const firstAnalysis = tokioAI.analyzeBatch(50);
+      const firstEndTime = performance.now();
+      const firstExecutionTime = firstEndTime - firstStartTime;
+      
+      // Second analysis (should be cached)
+      const secondStartTime = performance.now();
+      const secondAnalysis = tokioAI.analyzeBatch(50);
+      const secondEndTime = performance.now();
+      const secondExecutionTime = secondEndTime - secondStartTime;
+      
+      // Cached analysis should return same result
+      expect(secondAnalysis).toEqual(firstAnalysis);
+      
+      // Cached analysis should be significantly faster (at least 50% faster)
+      expect(secondExecutionTime).toBeLessThan(firstExecutionTime * 0.5);
+    });
+
+    test('Cache is cleared when results are cleared', () => {
+      const tokioAI = new TokioAI({ batchSize: 10, encryption: false });
+      
+      // Generate results and analyze
+      for (let i = 0; i < 20; i++) {
+        tokioAI.captureResult(i);
+      }
+      tokioAI.analyzeBatch(10);
+      
+      // Clear results
+      tokioAI.clearResults();
+      
+      // Verify results are empty
+      expect(tokioAI.results.length).toBe(0);
+      
+      // Verify cache is cleared (new analysis should not use cache)
+      const analysis = tokioAI.analyzeBatch(10);
+      expect(analysis.error).toBe('No hay resultados para analizar');
+    });
   });
 });

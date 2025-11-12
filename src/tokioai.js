@@ -42,6 +42,10 @@ export class TokioAI extends EventEmitter {
       totalAnalyses: 0,
       startTime: Date.now()
     };
+    
+    // Cache para análisis previos (mejora rendimiento)
+    this._analysisCache = new Map();
+    this._maxCacheSize = 10;
   }
 
   /**
@@ -82,11 +86,19 @@ export class TokioAI extends EventEmitter {
 
   /**
    * Análisis por lotes con cálculo de tendencias
+   * Optimized with result caching to avoid redundant calculations
    * @param {number} count - Número de resultados recientes a analizar (default: batchSize)
    * @returns {object} Análisis completo con tendencias y sugerencias
    */
   analyzeBatch(count = null) {
     const batchSize = count || this.config.batchSize;
+    
+    // Check cache for recent identical analysis
+    const cacheKey = `${this.results.length}-${batchSize}`;
+    if (this._analysisCache.has(cacheKey)) {
+      return this._analysisCache.get(cacheKey);
+    }
+    
     const batch = this.results.slice(-batchSize);
 
     if (batch.length === 0) {
@@ -135,6 +147,15 @@ export class TokioAI extends EventEmitter {
 
     this.stats.totalAnalyses++;
     this.emit('analysis-complete', this.analysis);
+
+    // Cache the analysis result
+    this._analysisCache.set(cacheKey, this.analysis);
+    
+    // Limit cache size to prevent memory issues
+    if (this._analysisCache.size > this._maxCacheSize) {
+      const firstKey = this._analysisCache.keys().next().value;
+      this._analysisCache.delete(firstKey);
+    }
 
     return this.analysis;
   }
@@ -513,6 +534,7 @@ export class TokioAI extends EventEmitter {
   clearResults() {
     this.results = [];
     this.analysis = null;
+    this._analysisCache.clear(); // Clear cache when results are cleared
     this.emit('results-cleared');
   }
 
