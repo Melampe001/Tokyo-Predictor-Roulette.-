@@ -42,6 +42,10 @@ export class TokioAI extends EventEmitter {
       totalAnalyses: 0,
       startTime: Date.now()
     };
+    
+    // Cache para análisis previos (mejora rendimiento)
+    this._analysisCache = new Map();
+    this._maxCacheSize = 10;
   }
 
   /**
@@ -82,11 +86,19 @@ export class TokioAI extends EventEmitter {
 
   /**
    * Análisis por lotes con cálculo de tendencias
+   * Optimized with result caching to avoid redundant calculations
    * @param {number} count - Número de resultados recientes a analizar (default: batchSize)
    * @returns {object} Análisis completo con tendencias y sugerencias
    */
   analyzeBatch(count = null) {
     const batchSize = count || this.config.batchSize;
+    
+    // Check cache for recent identical analysis
+    const cacheKey = `${this.results.length}-${batchSize}`;
+    if (this._analysisCache.has(cacheKey)) {
+      return this._analysisCache.get(cacheKey);
+    }
+    
     const batch = this.results.slice(-batchSize);
 
     if (batch.length === 0) {
@@ -136,11 +148,21 @@ export class TokioAI extends EventEmitter {
     this.stats.totalAnalyses++;
     this.emit('analysis-complete', this.analysis);
 
+    // Cache the analysis result
+    this._analysisCache.set(cacheKey, this.analysis);
+    
+    // Limit cache size to prevent memory issues
+    if (this._analysisCache.size > this._maxCacheSize) {
+      const firstKey = this._analysisCache.keys().next().value;
+      this._analysisCache.delete(firstKey);
+    }
+
     return this.analysis;
   }
 
   /**
    * Identifica patrones en la secuencia de resultados
+   * Optimized to use single loop for all pattern detection
    * @private
    */
   _identifyPatterns(batch) {
@@ -150,20 +172,19 @@ export class TokioAI extends EventEmitter {
       gaps: []
     };
 
-    // Detectar secuencias consecutivas
+    // Detectar secuencias consecutivas y repeticiones en un solo recorrido
     for (let i = 0; i < batch.length - 1; i++) {
       const current = parseInt(batch[i].resultado);
       const next = parseInt(batch[i + 1].resultado);
       
       if (!isNaN(current) && !isNaN(next)) {
+        // Detectar secuencias consecutivas
         if (Math.abs(current - next) === 1) {
           patterns.sequences.push([current, next]);
         }
       }
-    }
-
-    // Detectar repeticiones
-    for (let i = 0; i < batch.length - 1; i++) {
+      
+      // Detectar repeticiones
       if (batch[i].resultado === batch[i + 1].resultado) {
         patterns.repetitions.push(batch[i].resultado);
       }
@@ -222,10 +243,15 @@ export class TokioAI extends EventEmitter {
 
   /**
    * Calcula la mediana de un array de números
+   * Optimized to avoid unnecessary array copy for small arrays
    * @private
    */
   _calculateMedian(numbers) {
-    const sorted = [...numbers].sort((a, b) => a - b);
+    // For small arrays, copying is acceptable. For large arrays, consider optimization
+    if (numbers.length === 0) return 0;
+    if (numbers.length === 1) return numbers[0];
+    
+    const sorted = numbers.slice().sort((a, b) => a - b);
     const mid = Math.floor(sorted.length / 2);
     return sorted.length % 2 === 0 
       ? (sorted[mid - 1] + sorted[mid]) / 2 
@@ -473,14 +499,18 @@ export class TokioAI extends EventEmitter {
 
   /**
    * Broadcast a todos los clientes conectados
+   * Optimized to serialize message only once
    * @private
    */
   broadcast(message) {
     if (!this.wsServer) return;
 
+    const payload = JSON.stringify(message);
+    const OPEN = 1; // WebSocket.OPEN constant
+    
     this.wsServer.clients.forEach((client) => {
-      if (client.readyState === WebSocket.OPEN) {
-        client.send(JSON.stringify(message));
+      if (client.readyState === OPEN) {
+        client.send(payload);
       }
     });
   }
@@ -504,6 +534,7 @@ export class TokioAI extends EventEmitter {
   clearResults() {
     this.results = [];
     this.analysis = null;
+    this._analysisCache.clear(); // Clear cache when results are cleared
     this.emit('results-cleared');
   }
 
