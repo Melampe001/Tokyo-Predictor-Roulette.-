@@ -279,6 +279,44 @@ npm run build
 # Output en web-dashboard/dist/
 ```
 
+## 📱 Integración con Flutter
+
+Se incluye un ejemplo completo de integración con Flutter para aplicaciones móviles Android/iOS.
+
+```bash
+cd examples/flutter
+flutter pub get
+flutter run
+```
+
+### Características del Ejemplo Flutter
+
+- ✅ Cliente REST API completo
+- ✅ Cliente WebSocket para actualizaciones en tiempo real
+- ✅ UI Material Design 3
+- ✅ Envío de resultados de ruleta
+- ✅ Visualización de análisis y estadísticas
+- ✅ Manejo de errores y reconexión
+- ✅ Soporte para modo offline
+
+Ver documentación completa en [examples/flutter/README.md](./examples/flutter/README.md)
+
+### Uso Rápido
+
+```dart
+import 'package:tokioai_flutter_example/services/tokioai_api_service.dart';
+
+// Crear cliente API
+final api = TokioAIApiService(baseUrl: 'http://localhost:8080');
+
+// Enviar resultado
+final result = await api.submitResult(12);
+
+// Obtener análisis
+final analysis = await api.getAnalysis(count: 10);
+print(analysis.suggestion);
+```
+
 ## 🔍 Análisis de APK
 
 Utiliza el script incluido para analizar APKs de Android:
@@ -518,7 +556,7 @@ Ver [TOKIOAI_README.md](./TOKIOAI_README.md)
 Ver los issues abiertos en GitHub para:
 
 - [ ] ~~Integrar implementación real de TokioAI~~ ✅ **COMPLETADO** (ya usa implementación real)
-- [ ] Añadir ejemplo de integración con cliente Flutter
+- [ ] ~~Añadir ejemplo de integración con cliente Flutter~~ ✅ **COMPLETADO** (ver [examples/flutter/](./examples/flutter/))
 - [ ] Configurar despliegue automatizado a Play Store con Fastlane
 - [ ] Añadir autenticación y autorización
 - [ ] Mejorar cobertura de tests
