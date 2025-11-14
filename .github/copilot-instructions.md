@@ -31,7 +31,7 @@ Tokyo Predictor Roulette is a Node.js-based predictive analysis system for roule
 2. **Use Spanish for comments and documentation**: This is a Spanish-language project
 3. **Async/Await**: Prefer async/await over raw Promises
 4. **Error Handling**: Always wrap async operations in try-catch blocks
-5. **Logging**: Use Winston logger for all logging (imported from `src/logger.js`)
+5. **Logging**: Use Winston logger for all logging (configured in `server.js`)
 
 ### File Organization
 
@@ -40,8 +40,7 @@ Tokyo Predictor Roulette is a Node.js-based predictive analysis system for roule
   - `tokioai-adapter.js`: Adapter layer with fallback stub
   - `crypto-utils.js`: Encryption utilities
   - `pdf-generator.js`: PDF report generation
-  - `logger.js`: Winston logger configuration
-- `server.js`: Express server with REST API and WebSocket
+- `server.js`: Express server with REST API, WebSocket, and Winston logger configuration
 - `test/`: Test files
   - `test.js`: Legacy test suite (20 test cases)
   - `backend.test.js`: Jest test suite for backend
