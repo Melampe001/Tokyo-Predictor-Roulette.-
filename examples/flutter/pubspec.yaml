@@ -1,0 +1,37 @@
+name: tokioai_flutter_example
+description: Flutter integration example for TokioAI predictive analysis backend
+version: 1.0.0
+publish_to: 'none'
+
+environment:
+  sdk: '>=3.0.0 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+  
+  # HTTP client for REST API calls
+  http: ^1.1.0
+  
+  # WebSocket support
+  web_socket_channel: ^2.4.0
+  
+  # JSON serialization
+  json_annotation: ^4.8.1
+  
+  # State management
+  provider: ^6.1.1
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  
+  # Linting
+  flutter_lints: ^3.0.0
+  
+  # Code generation for JSON
+  build_runner: ^2.4.6
+  json_serializable: ^6.7.1
+
+flutter:
+  uses-material-design: true
