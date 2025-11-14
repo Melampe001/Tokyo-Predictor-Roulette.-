@@ -1,7 +1,6 @@
 version: '3.8'
 
 services:
-  # Backend server
   backend:
     build:
       context: .
@@ -9,12 +8,8 @@ services:
     container_name: tokioai-backend
     ports:
       - "8080:8080"
-    environment:
-      - NODE_ENV=production
-      - PORT=8080
-      - BATCH_SIZE=10
-      - ENABLE_ENCRYPTION=true
-      - AUTO_ANALYZE=true
+    env_file:
+      - .env
     volumes:
       - ./logs:/app/logs
       - ./output:/app/output
@@ -25,16 +20,22 @@ services:
       timeout: 3s
       retries: 3
       start_period: 10s
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+    networks:
+      - tokioai-network
 
-  # Web dashboard (development mode)
   dashboard:
     image: node:20-alpine
     container_name: tokioai-dashboard
     working_dir: /app
     ports:
       - "3000:3000"
-    environment:
-      - NODE_ENV=development
+    env_file:
+      - .env
     volumes:
       - ./web-dashboard:/app
       - /app/node_modules
@@ -42,10 +43,9 @@ services:
     depends_on:
       - backend
     restart: unless-stopped
-
-volumes:
-  node_modules:
+    networks:
+      - tokioai-network
 
 networks:
-  default:
-    name: tokioai-network
+  tokioai-network:
+    driver: bridge
