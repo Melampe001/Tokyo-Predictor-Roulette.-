@@ -1,0 +1,20 @@
+name: Copilot Security Agent
+
+on:
+  pull_request:
+    types: [opened, synchronize, labeled, unlabeled]
+
+permissions:
+  contents: read
+  security-events: write
+  actions: read
+
+jobs:
+  copilot_security:
+    if: ${{ github.event.pull_request.draft == false && !contains(join(github.event.pull_request.labels.*.name, ','), 'skip-copilot') }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Run Copilot Security Agent
+        uses: github/copilot-security@v1
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
