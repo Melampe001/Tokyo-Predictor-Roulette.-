@@ -118,7 +118,7 @@
       console.error('Error creating todo:', err);
       // Modo offline: crear localmente
       const offlineTodo = {
-        id: 'offline-' + Date.now() + Math.random().toString(36).substr(2, 9),
+        id: 'offline-' + Date.now() + Math.random().toString(36).substring(2, 11),
         text,
         completed: false,
         createdAt: new Date().toISOString(),
