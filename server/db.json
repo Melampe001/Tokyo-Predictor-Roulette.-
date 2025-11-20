@@ -1,0 +1,18 @@
+{
+  "todos": [
+    {
+      "id": "17636410842346joeityfa",
+      "text": "Test todo",
+      "completed": false,
+      "createdAt": "2025-11-20T12:18:04.234Z",
+      "updatedAt": "2025-11-20T12:18:04.234Z"
+    },
+    {
+      "id": "1763641084347j6ptj8mwx",
+      "text": "Todo to update",
+      "completed": true,
+      "createdAt": "2025-11-20T12:18:04.347Z",
+      "updatedAt": "2025-11-20T12:18:04.451Z"
+    }
+  ]
+}
