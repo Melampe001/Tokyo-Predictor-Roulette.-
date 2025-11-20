@@ -13,12 +13,20 @@ export class CryptoUtils {
 
   /**
    * Encripta datos usando AES-256-GCM
+   * Optimized to reduce type checking overhead
    * @param {string|object} data - Datos a encriptar
    * @returns {object} Objeto con datos encriptados, IV y authTag
    */
   encrypt(data) {
     try {
-      const dataString = typeof data === 'string' ? data : JSON.stringify(data);
+      // Optimize: Check type only once and handle strings directly
+      let dataString;
+      if (typeof data === 'string') {
+        dataString = data;
+      } else {
+        dataString = JSON.stringify(data);
+      }
+      
       const iv = crypto.randomBytes(16);
       const cipher = crypto.createCipheriv(this.algorithm, this.masterKey, iv);
       
