@@ -146,8 +146,10 @@ if [ -f "$TEMP_DIR/META-INF/CERT.RSA" ] || [ -f "$TEMP_DIR/META-INF/CERT.DSA" ];
         for cert in "$TEMP_DIR/META-INF/CERT."*; do
             if [ -f "$cert" ]; then
                 echo "Analyzing: $(basename $cert)"
-                openssl pkcs7 -inform DER -in "$cert" -noout -print_certs -text | \
-                    grep -E "Subject:|Issuer:|Not Before|Not After |SHA256 Fingerprint"
+                # Try to parse certificate, but don't fail if it's not valid
+                openssl pkcs7 -inform DER -in "$cert" -noout -print_certs -text 2>/dev/null | \
+                    grep -E "Subject:|Issuer:|Not Before|Not After |SHA256 Fingerprint" || \
+                    echo "  Note: Unable to parse certificate (may be invalid or corrupted)"
                 echo ""
             fi
         done
