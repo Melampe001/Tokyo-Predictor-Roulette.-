@@ -38,7 +38,12 @@ cd Tokyo-Predictor-Roulette.-
 
 # Instalar dependencias del backend
 npm install
+
+# Verificar instalación (opcional)
+npm test
 ```
+
+> **✅ Verificación exitosa:** Si todos los tests pasan, la instalación fue correcta y estás listo para ejecutar el servidor.
 
 ## 🚀 Ejecución Local
 
