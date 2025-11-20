@@ -1,6 +1,8 @@
 # Tokyo Predictor Roulette
 
-Proyecto de análisis predictivo para casino privado Android con módulo de IA.
+**Proyecto de análisis predictivo para aplicaciones de casino privado Android con módulo de IA integrado.**
+
+Este sistema proporciona un backend completo con capacidades de análisis en tiempo real para aplicaciones de ruleta Android, permitiendo a los desarrolladores integrar predicciones basadas en IA, análisis de patrones y sugerencias optimizadas directamente en sus aplicaciones móviles.
 
 > **✅ Estado:** TokioAI implementación real **completamente integrada y verificada**. Todos los tests pasan (36/36).
 
@@ -8,7 +10,7 @@ Proyecto de análisis predictivo para casino privado Android con módulo de IA.
 
 ## 🎰 TokioAI - Módulo de Análisis Predictivo
 
-TokioAI es un módulo de agente IA diseñado para análisis predictivo, integración dinámica de RNG y seguridad reforzada.
+TokioAI es un módulo de agente IA diseñado para análisis predictivo, integración dinámica de RNG y seguridad reforzada, optimizado para integración con aplicaciones de casino Android.
 
 ### Características Principales
 
@@ -20,6 +22,7 @@ TokioAI es un módulo de agente IA diseñado para análisis predictivo, integrac
 - ✅ **Backend REST + WebSocket**: Servidor de producción con Express
 - ✅ **Web Dashboard**: Interfaz web en tiempo real con React
 - ✅ **Docker Ready**: Contenedores para desarrollo y producción
+- ✅ **Android Compatible**: API REST y WebSocket listos para integración móvil
 
 ## 📦 Instalación
 
@@ -253,6 +256,310 @@ ws.send(JSON.stringify({
 { type: 'pong', timestamp: '...' }
 ```
 
+## 📱 Integración con Android
+
+El backend de Tokyo Predictor está diseñado para ser fácilmente integrable con aplicaciones Android nativas. A continuación se presentan ejemplos de integración.
+
+### Conexión desde Android (Java)
+
+```java
+import okhttp3.*;
+import org.json.*;
+
+public class TokioAIClient {
+    private static final String BASE_URL = "http://your-server:8080";
+    private final OkHttpClient client = new OkHttpClient();
+    
+    // Enviar resultado de ruleta
+    public void sendResult(int value) throws IOException {
+        JSONObject json = new JSONObject();
+        json.put("value", value);
+        
+        RequestBody body = RequestBody.create(
+            json.toString(),
+            MediaType.parse("application/json")
+        );
+        
+        Request request = new Request.Builder()
+            .url(BASE_URL + "/api/result")
+            .post(body)
+            .build();
+            
+        try (Response response = client.newCall(request).execute()) {
+            String responseBody = response.body().string();
+            System.out.println("Resultado enviado: " + responseBody);
+        }
+    }
+    
+    // Obtener análisis
+    public JSONObject getAnalysis(int count) throws IOException, JSONException {
+        Request request = new Request.Builder()
+            .url(BASE_URL + "/api/analysis?count=" + count)
+            .get()
+            .build();
+            
+        try (Response response = client.newCall(request).execute()) {
+            String responseBody = response.body().string();
+            return new JSONObject(responseBody);
+        }
+    }
+    
+    // Obtener resultados recientes
+    public JSONArray getRecentResults(int limit) throws IOException, JSONException {
+        Request request = new Request.Builder()
+            .url(BASE_URL + "/api/results?limit=" + limit)
+            .get()
+            .build();
+            
+        try (Response response = client.newCall(request).execute()) {
+            String responseBody = response.body().string();
+            JSONObject jsonResponse = new JSONObject(responseBody);
+            return jsonResponse.getJSONArray("data");
+        }
+    }
+}
+```
+
+### Conexión desde Android (Kotlin)
+
+```kotlin
+import okhttp3.*
+import okhttp3.MediaType.Companion.toMediaType
+import okhttp3.RequestBody.Companion.toRequestBody
+import org.json.JSONObject
+import org.json.JSONArray
+
+class TokioAIClient {
+    private val baseUrl = "http://your-server:8080"
+    private val client = OkHttpClient()
+    private val jsonMediaType = "application/json; charset=utf-8".toMediaType()
+    
+    // Enviar resultado de ruleta
+    suspend fun sendResult(value: Int): String? {
+        val json = JSONObject().apply {
+            put("value", value)
+        }
+        
+        val requestBody = json.toString().toRequestBody(jsonMediaType)
+        val request = Request.Builder()
+            .url("$baseUrl/api/result")
+            .post(requestBody)
+            .build()
+            
+        return client.newCall(request).execute().use { response ->
+            response.body?.string()
+        }
+    }
+    
+    // Obtener análisis
+    suspend fun getAnalysis(count: Int = 10): JSONObject? {
+        val request = Request.Builder()
+            .url("$baseUrl/api/analysis?count=$count")
+            .get()
+            .build()
+            
+        return client.newCall(request).execute().use { response ->
+            response.body?.string()?.let { JSONObject(it) }
+        }
+    }
+    
+    // Obtener resultados recientes
+    suspend fun getRecentResults(limit: Int = 50): JSONArray? {
+        val request = Request.Builder()
+            .url("$baseUrl/api/results?limit=$limit")
+            .get()
+            .build()
+            
+        return client.newCall(request).execute().use { response ->
+            response.body?.string()?.let { 
+                JSONObject(it).getJSONArray("data")
+            }
+        }
+    }
+}
+```
+
+### WebSocket en Android (Java)
+
+```java
+import okhttp3.*;
+
+public class TokioAIWebSocket {
+    private WebSocket webSocket;
+    private final OkHttpClient client = new OkHttpClient();
+    
+    public void connect(String serverUrl) {
+        Request request = new Request.Builder()
+            .url(serverUrl)
+            .build();
+            
+        webSocket = client.newWebSocket(request, new WebSocketListener() {
+            @Override
+            public void onOpen(WebSocket webSocket, Response response) {
+                System.out.println("WebSocket conectado");
+            }
+            
+            @Override
+            public void onMessage(WebSocket webSocket, String text) {
+                try {
+                    JSONObject message = new JSONObject(text);
+                    String type = message.getString("type");
+                    
+                    switch (type) {
+                        case "result-update":
+                            handleResultUpdate(message.getJSONObject("data"));
+                            break;
+                        case "analysis":
+                            handleAnalysis(message.getJSONObject("data"));
+                            break;
+                        case "connected":
+                            System.out.println("Conexión establecida");
+                            break;
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+            
+            @Override
+            public void onFailure(WebSocket webSocket, Throwable t, Response response) {
+                System.err.println("Error en WebSocket: " + t.getMessage());
+            }
+        });
+    }
+    
+    public void sendResult(int value) {
+        JSONObject message = new JSONObject();
+        try {
+            message.put("type", "result");
+            message.put("value", value);
+            webSocket.send(message.toString());
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
+    
+    public void requestAnalysis(int count) {
+        JSONObject message = new JSONObject();
+        try {
+            message.put("type", "request-analysis");
+            message.put("count", count);
+            webSocket.send(message.toString());
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
+    
+    private void handleResultUpdate(JSONObject data) {
+        // Actualizar UI con nuevo resultado
+    }
+    
+    private void handleAnalysis(JSONObject data) {
+        // Mostrar análisis en UI
+    }
+    
+    public void disconnect() {
+        if (webSocket != null) {
+            webSocket.close(1000, "Cliente desconectado");
+        }
+    }
+}
+```
+
+### Ejemplo de Uso en Activity (Android)
+
+```kotlin
+class MainActivity : AppCompatActivity() {
+    private lateinit var tokioClient: TokioAIClient
+    private lateinit var tokioWebSocket: TokioAIWebSocket
+    
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_main)
+        
+        tokioClient = TokioAIClient()
+        tokioWebSocket = TokioAIWebSocket()
+        
+        // Conectar WebSocket
+        tokioWebSocket.connect("ws://your-server:8080")
+        
+        // Ejemplo: Enviar resultado cuando se presiona un botón
+        findViewById<Button>(R.id.btnSendResult).setOnClickListener {
+            lifecycleScope.launch {
+                val result = getRouletteResult() // Tu lógica de ruleta
+                tokioClient.sendResult(result)
+            }
+        }
+        
+        // Ejemplo: Solicitar análisis
+        findViewById<Button>(R.id.btnGetAnalysis).setOnClickListener {
+            lifecycleScope.launch {
+                val analysis = tokioClient.getAnalysis(10)
+                updateUI(analysis)
+            }
+        }
+    }
+    
+    override fun onDestroy() {
+        super.onDestroy()
+        tokioWebSocket.disconnect()
+    }
+}
+```
+
+### Dependencias Necesarias (build.gradle)
+
+```gradle
+dependencies {
+    // OkHttp para conexiones HTTP y WebSocket
+    implementation 'com.squareup.okhttp3:okhttp:4.12.0'
+    
+    // Coroutines para operaciones asíncronas (Kotlin)
+    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3'
+    
+    // Opcional: Retrofit para API REST más elegante
+    implementation 'com.squareup.retrofit2:retrofit:2.9.0'
+    implementation 'com.squareup.retrofit2:converter-gson:2.9.0'
+}
+```
+
+### Permisos Necesarios (AndroidManifest.xml)
+
+```xml
+<uses-permission android:name="android.permission.INTERNET" />
+<uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+```
+
+### Consideraciones de Seguridad para Android
+
+1. **HTTPS en Producción**: Usar siempre HTTPS en lugar de HTTP para producción
+2. **Certificados SSL**: Configurar correctamente los certificados SSL en el servidor
+3. **Ofuscación**: Usar ProGuard/R8 para ofuscar el código de la app
+4. **Validación de Datos**: Validar siempre los datos recibidos del servidor
+5. **Manejo de Errores**: Implementar reintentos y manejo robusto de errores de red
+
+### Flujo de Integración Recomendado
+
+```
+┌─────────────────┐
+│  App Android    │
+│   (Cliente)     │
+└────────┬────────┘
+         │
+         ├─── HTTP REST ────┐
+         │                  │
+         ├─── WebSocket ────┤
+         │                  ▼
+         │         ┌──────────────────┐
+         │         │  TokioAI Backend │
+         │         │  (Node.js/Express)│
+         │         └──────────────────┘
+         │                  │
+         └─── Resultados ───┤
+              Análisis ─────┤
+              Sugerencias ──┘
+```
+
 ## 🧪 Pruebas
 
 ```bash
@@ -283,7 +590,20 @@ npm run build
 
 ## 🔍 Análisis de APK
 
-Utiliza el script incluido para analizar APKs de Android:
+El proyecto incluye un script avanzado para analizar APKs de aplicaciones Android, útil para desarrolladores que deseen inspeccionar sus aplicaciones de casino antes de la distribución.
+
+### Características del Analizador
+
+- **Información del Paquete**: Nombre, versión, SDK mínimo y target
+- **Permisos**: Lista completa de permisos solicitados
+- **Componentes**: Actividades, servicios, receivers y providers
+- **Estructura de Archivos**: Organización interna del APK
+- **Certificados**: Información de firma y validación
+- **Seguridad**: Checks básicos de seguridad (debuggable, obfuscación, etc.)
+- **Librerías Nativas**: Detección de bibliotecas .so incluidas
+- **Recursos**: Análisis de recursos y assets
+
+### Uso del Script
 
 ```bash
 # Dar permisos de ejecución (solo la primera vez)
@@ -293,13 +613,39 @@ chmod +x scripts/analyze_apk.sh
 ./scripts/analyze_apk.sh path/to/your-app.apk
 ```
 
-El script proporciona:
-- Información del paquete
-- Permisos requeridos
-- Actividades y servicios
-- Estructura de archivos
-- Verificación de certificados
-- Checks básicos de seguridad
+### Ejemplo de Salida
+
+```
+=== Tokyo Predictor APK Analysis ===
+
+Analyzing: my-casino-app.apk
+
+--- File Information ---
+-rw-r--r-- 1 user user 25M Nov 20 10:30 my-casino-app.apk
+
+--- Package Information ---
+package: name='com.example.casino' versionCode='1' versionName='1.0'
+sdkVersion:'21'
+targetSdkVersion:'34'
+application-label:'Casino Roulette'
+
+--- Permissions ---
+uses-permission: android.permission.INTERNET
+uses-permission: android.permission.ACCESS_NETWORK_STATE
+uses-permission: android.permission.VIBRATE
+
+--- Activities ---
+launchable-activity: name='com.example.casino.MainActivity'
+
+✓ App is not debuggable
+```
+
+### Casos de Uso
+
+1. **Pre-distribución**: Verificar la configuración antes de subir a Play Store
+2. **Auditoría de Seguridad**: Identificar permisos innecesarios o configuraciones inseguras
+3. **Debugging**: Analizar problemas de integración o configuración
+4. **Documentación**: Generar documentación técnica del APK
 
 **Requisitos**: `aapt` (Android SDK build-tools), `unzip`, `openssl`
 
@@ -465,6 +811,86 @@ cd web-dashboard
 npm run dev
 ```
 
+### Desarrollo para Android
+
+#### 1. Configurar el Backend Localmente
+
+```bash
+# Instalar dependencias
+npm install
+
+# Iniciar servidor de desarrollo
+npm run dev
+
+# El servidor estará en http://localhost:8080
+```
+
+#### 2. Configurar la App Android
+
+```kotlin
+// En tu clase de configuración o Application
+object ApiConfig {
+    // Para emulador de Android
+    const val BASE_URL = "http://10.0.2.2:8080"
+    
+    // Para dispositivo físico (usa tu IP local)
+    // const val BASE_URL = "http://192.168.1.100:8080"
+    
+    // Para producción
+    // const val BASE_URL = "https://your-domain.com"
+}
+```
+
+#### 3. Probar la Integración
+
+```bash
+# Verificar que el backend esté funcionando
+curl http://localhost:8080/health
+
+# Enviar un resultado de prueba
+curl -X POST http://localhost:8080/api/result \
+  -H "Content-Type: application/json" \
+  -d '{"value": 12}'
+
+# Obtener análisis
+curl http://localhost:8080/api/analysis?count=10
+```
+
+#### 4. Debugging
+
+```bash
+# Ver logs del backend en tiempo real
+npm run dev
+
+# Logs en producción (Docker)
+docker-compose logs -f backend
+
+# Test de conectividad desde Android
+adb shell ping your-server-ip
+```
+
+### Workflow de Desarrollo Recomendado
+
+```
+1. Desarrollar Backend
+   ├── Modificar endpoints en server.js
+   ├── Actualizar lógica en src/
+   └── Ejecutar tests: npm test
+
+2. Probar con Web Dashboard
+   ├── cd web-dashboard && npm run dev
+   └── Verificar funcionalidad en navegador
+
+3. Integrar con Android
+   ├── Crear cliente HTTP/WebSocket
+   ├── Implementar UI
+   └── Probar en emulador/dispositivo
+
+4. Desplegar
+   ├── Backend: docker-compose up -d
+   └── Android: Generar APK firmado
+```
+
 ## 🤝 Contribuir
 
 1. Fork el proyecto
@@ -520,11 +946,16 @@ Ver [TOKIOAI_README.md](./TOKIOAI_README.md)
 Ver los issues abiertos en GitHub para:
 
 - [ ] ~~Integrar implementación real de TokioAI~~ ✅ **COMPLETADO** (ya usa implementación real)
+- [ ] Añadir ejemplo completo de aplicación Android con integración TokioAI
+- [ ] Crear librería Android (AAR) para facilitar la integración
 - [ ] Añadir ejemplo de integración con cliente Flutter
 - [ ] Configurar despliegue automatizado a Play Store con Fastlane
-- [ ] Añadir autenticación y autorización
+- [ ] Implementar autenticación JWT para apps móviles
+- [ ] Añadir autenticación y autorización al backend
 - [ ] Mejorar cobertura de tests
 - [ ] Añadir documentación de API con OpenAPI/Swagger
+- [ ] Crear guía de integración Android paso a paso
+- [ ] Añadir soporte para notificaciones push en Android
 
 ## 📄 Licencia
 
