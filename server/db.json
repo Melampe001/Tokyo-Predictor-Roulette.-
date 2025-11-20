@@ -1,0 +1,32 @@
+{
+  "todos": [
+    {
+      "id": "1763638601481",
+      "text": "Test todo",
+      "completed": false,
+      "createdAt": "2025-11-20T11:36:41.481Z",
+      "updatedAt": "2025-11-20T11:36:41.481Z"
+    },
+    {
+      "id": "1763638601490",
+      "text": "Updated todo",
+      "completed": true,
+      "createdAt": "2025-11-20T11:36:41.490Z",
+      "updatedAt": "2025-11-20T11:36:41.494Z"
+    },
+    {
+      "id": "1763638601617",
+      "text": "Broadcast test todo",
+      "completed": false,
+      "createdAt": "2025-11-20T11:36:41.617Z",
+      "updatedAt": "2025-11-20T11:36:41.617Z"
+    },
+    {
+      "id": "1763638601729",
+      "text": "Todo to update via WS",
+      "completed": true,
+      "createdAt": "2025-11-20T11:36:41.729Z",
+      "updatedAt": "2025-11-20T11:36:41.833Z"
+    }
+  ]
+}
