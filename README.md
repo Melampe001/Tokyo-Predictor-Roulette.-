@@ -4,6 +4,8 @@ Proyecto de análisis predictivo para casino privado Android con módulo de IA.
 
 > **✅ Estado:** TokioAI implementación real **completamente integrada y verificada**. Todos los tests pasan (36/36).
 
+> **📊 Resumen Completo del Proyecto:** Lee el [Resumen Completo (RESUMEN_PROYECTO.md)](./RESUMEN_PROYECTO.md) para ver todo lo que se ha logrado hasta este punto.
+
 > **🆘 ¿Necesitas ayuda?** Consulta la [Guía de Ayuda Completa (HELP.md)](./HELP.md) para inicio rápido, solución de problemas y ejemplos.
 
 ## 🎰 TokioAI - Módulo de Análisis Predictivo
