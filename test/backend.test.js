@@ -47,6 +47,61 @@ describe('Tokyo Predictor Backend Server', () => {
     });
   });
 
+  describe('Check Endpoint', () => {
+    test('GET /check returns ready status', async () => {
+      const response = await request(app).get('/check');
+      
+      expect(response.status).toBe(200);
+      expect(response.body).toHaveProperty('status', 'ok');
+      expect(response.body).toHaveProperty('ready', true);
+      expect(response.body).toHaveProperty('timestamp');
+    });
+  });
+
+  describe('Status Endpoint', () => {
+    test('GET /status returns comprehensive system information', async () => {
+      mockTokioAI.getStatistics.mockReturnValue({
+        totalResults: 100,
+        totalAnalyses: 10,
+        currentResults: 50,
+        lastAnalysis: new Date().toISOString(),
+        uptime: 60000
+      });
+
+      const response = await request(app).get('/status');
+      
+      expect(response.status).toBe(200);
+      expect(response.body).toHaveProperty('status', 'operational');
+      expect(response.body).toHaveProperty('timestamp');
+      expect(response.body).toHaveProperty('system');
+      expect(response.body.system).toHaveProperty('uptime');
+      expect(response.body.system).toHaveProperty('environment');
+      expect(response.body.system).toHaveProperty('nodeVersion');
+      expect(response.body.system).toHaveProperty('platform');
+      expect(response.body).toHaveProperty('memory');
+      expect(response.body.memory).toHaveProperty('heapUsed');
+      expect(response.body.memory).toHaveProperty('heapTotal');
+      expect(response.body.memory).toHaveProperty('unit', 'MB');
+      expect(response.body).toHaveProperty('tokioai');
+      expect(response.body.tokioai).toHaveProperty('resultsCount', 50);
+      expect(response.body.tokioai).toHaveProperty('totalResults', 100);
+      expect(response.body).toHaveProperty('websocket');
+      expect(mockTokioAI.getStatistics).toHaveBeenCalled();
+    });
+
+    test('GET /status handles errors gracefully', async () => {
+      mockTokioAI.getStatistics.mockImplementation(() => {
+        throw new Error('Statistics error');
+      });
+
+      const response = await request(app).get('/status');
+      
+      expect(response.status).toBe(500);
+      expect(response.body).toHaveProperty('status', 'error');
+      expect(response.body).toHaveProperty('message');
+    });
+  });
+
   describe('Result Submission Endpoint', () => {
     test('POST /api/result with valid value succeeds', async () => {
       const mockResult = {
