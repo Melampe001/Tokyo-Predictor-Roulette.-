@@ -2,7 +2,9 @@
 
 Proyecto de análisis predictivo para casino privado Android con módulo de IA.
 
-> **✅ Estado:** TokioAI implementación real **completamente integrada y verificada**. Todos los tests pasan (36/36).
+> **✅ Estado:** TokioAI implementación real **completamente integrada y verificada**. Sistema de autenticación y seguridad implementado.
+
+> **🔐 Seguridad:** Consulta la [Guía de Seguridad (SECURITY.md)](./SECURITY.md) para autenticación, encriptación y mejores prácticas.
 
 > **🆘 ¿Necesitas ayuda?** Consulta la [Guía de Ayuda Completa (HELP.md)](./HELP.md) para inicio rápido, solución de problemas y ejemplos.
 
@@ -12,14 +14,17 @@ TokioAI es un módulo de agente IA diseñado para análisis predictivo, integrac
 
 ### Características Principales
 
-- ✅ **Captura y Sincronización**: Resultados manuales o vía WebSocket
+- ✅ **Autenticación JWT**: Sistema de login seguro con tokens
+- ✅ **Encriptación AES-256-GCM**: Datos de usuario protegidos
+- ✅ **Aislamiento de Datos**: Cada usuario solo accede a sus propios datos
+- ✅ **Captura y Sincronización**: Resultados manuales o vía WebSocket autenticado
 - ✅ **Análisis por Lotes**: Procesa grupos de 10 resultados con cálculo de tendencias
 - ✅ **Sugerencias Optimizadas**: Recomendaciones basadas en patrones y frecuencias
-- ✅ **Encriptación Local**: Seguridad con AES-256-GCM
 - ✅ **Generación de PDF**: Reportes con columnas: Resultado, Probabilidad, Fecha, Hora
 - ✅ **Backend REST + WebSocket**: Servidor de producción con Express
 - ✅ **Web Dashboard**: Interfaz web en tiempo real con React
 - ✅ **Docker Ready**: Contenedores para desarrollo y producción
+- ✅ **Rate Limiting**: Protección contra ataques de fuerza bruta
 
 ## 📦 Instalación
 
@@ -108,8 +113,23 @@ BATCH_SIZE=10
 ENABLE_ENCRYPTION=true
 AUTO_ANALYZE=true
 
+# Authentication & Security
+JWT_SECRET=tu_secreto_jwt_muy_seguro_aqui_64_caracteres_minimo
+JWT_EXPIRATION=24h
+ADMIN_USERNAME=admin
+ADMIN_PASSWORD=cambiar_esta_contraseña_en_produccion
+
 # Logging
 LOG_LEVEL=info
+```
+
+**⚠️ IMPORTANTE**: En producción, cambiar `ADMIN_PASSWORD` y `JWT_SECRET` por valores seguros.
+
+Generar un JWT secret seguro:
+```bash
+openssl rand -hex 64
+# o
+node -e "console.log(require('crypto').randomBytes(64).toString('hex'))"
 ```
 
 ### Opciones de TokioAI
@@ -125,9 +145,49 @@ const tokio = new TokioAI({
 
 ## 🔌 API REST
 
-### Endpoints Disponibles
+### 🔐 Autenticación
 
-#### Health Check
+**Todos los endpoints de datos requieren autenticación.** Ver [SECURITY.md](./SECURITY.md) para detalles completos.
+
+#### Registro de Usuario
+```bash
+POST /api/auth/register
+Content-Type: application/json
+
+{
+  "username": "miusuario",
+  "password": "MiPassword123!"
+}
+
+# Respuesta: { success: true, user: { username: "...", role: "user", createdAt: "..." } }
+```
+
+#### Login
+```bash
+POST /api/auth/login
+Content-Type: application/json
+
+{
+  "username": "miusuario",
+  "password": "MiPassword123!"
+}
+
+# Respuesta: { success: true, token: "eyJhbG...", user: { username: "...", role: "user" } }
+```
+
+#### Verificar Token
+```bash
+GET /api/auth/verify
+Authorization: Bearer YOUR_TOKEN
+
+# Respuesta: { success: true, user: { username: "...", role: "user" } }
+```
+
+### Endpoints de Datos (Requieren Autenticación)
+
+**Nota**: Incluir el token en el header `Authorization: Bearer TOKEN` en todas las peticiones.
+
+#### Health Check (Público)
 ```bash
 GET /health
 # Respuesta: { status: "healthy", timestamp: "...", uptime: 123 }
@@ -136,6 +196,7 @@ GET /health
 #### Enviar Resultado
 ```bash
 POST /api/result
+Authorization: Bearer YOUR_TOKEN
 Content-Type: application/json
 
 {
@@ -148,40 +209,85 @@ Content-Type: application/json
 #### Obtener Análisis
 ```bash
 GET /api/analysis?count=10
+Authorization: Bearer YOUR_TOKEN
 
 # Respuesta: { success: true, data: { batchSize: 10, suggestion: "...", ... } }
 ```
 
-#### Obtener Resultados Recientes
+#### Obtener Resultados Recientes (Usuario-Específico)
 ```bash
 GET /api/results?limit=50
+Authorization: Bearer YOUR_TOKEN
 
 # Respuesta: { success: true, data: [...], total: 100 }
 ```
 
-#### Obtener Estadísticas
+#### Obtener Estadísticas (Usuario-Específico)
 ```bash
 GET /api/statistics
+Authorization: Bearer YOUR_TOKEN
 
-# Respuesta: { success: true, data: { currentResults: 50, uptime: 3600000 } }
+# Respuesta: { success: true, data: { totalResults: 50, frequencies: {...}, ... } }
 ```
 
-#### Limpiar Resultados
+#### Obtener Historial (Usuario-Específico)
+```bash
+GET /api/history?limit=100
+Authorization: Bearer YOUR_TOKEN
+
+# Respuesta: { success: true, data: [...] }
+```
+
+#### Exportar Datos (Usuario-Específico)
+```bash
+GET /api/export
+Authorization: Bearer YOUR_TOKEN
+
+# Respuesta: { success: true, data: { username: "...", exportDate: "...", results: [...], ... } }
+```
+
+#### Limpiar Resultados (Usuario-Específico)
 ```bash
 POST /api/clear
+Authorization: Bearer YOUR_TOKEN
 
 # Respuesta: { success: true, message: "All results cleared" }
 ```
 
+### Endpoints de Administrador
+
+Solo disponibles para usuarios con rol `admin`:
+
+#### Listar Usuarios
+```bash
+GET /api/auth/users
+Authorization: Bearer ADMIN_TOKEN
+
+# Respuesta: { success: true, users: [...] }
+```
+
+#### Eliminar Usuario
+```bash
+DELETE /api/auth/users/:username
+Authorization: Bearer ADMIN_TOKEN
+
+# Respuesta: { success: true, message: "User deleted successfully" }
+```
+
+### Endpoints Disponibles
+
 ## 🌐 WebSocket
 
-### Conexión
+### Conexión Autenticada
+
+**Método 1**: Token en URL (recomendado)
 
 ```javascript
-const ws = new WebSocket('ws://localhost:8080');
+const token = "YOUR_JWT_TOKEN";
+const ws = new WebSocket(`ws://localhost:8080?token=${token}`);
 
 ws.onopen = () => {
-  console.log('Conectado');
+  console.log('Conectado y autenticado');
 };
 
 ws.onmessage = (event) => {
@@ -190,9 +296,38 @@ ws.onmessage = (event) => {
 };
 ```
 
-### Mensajes Salientes (Cliente → Servidor)
+**Método 2**: Autenticación posterior
 
 ```javascript
+const ws = new WebSocket('ws://localhost:8080');
+
+ws.onopen = () => {
+  // Autenticar con token
+  ws.send(JSON.stringify({
+    type: 'authenticate',
+    token: 'YOUR_JWT_TOKEN'
+  }));
+};
+
+ws.onmessage = (event) => {
+  const message = JSON.parse(event.data);
+  if (message.type === 'authenticated') {
+    console.log('Autenticación exitosa');
+  }
+};
+```
+
+### Mensajes Salientes (Cliente → Servidor)
+
+**Nota**: La conexión debe estar autenticada antes de enviar mensajes de datos.
+
+```javascript
+// Autenticarse (si no se hizo en la URL)
+ws.send(JSON.stringify({
+  type: 'authenticate',
+  token: 'YOUR_JWT_TOKEN'
+}));
+
 // Enviar resultado
 ws.send(JSON.stringify({
   type: 'result',
@@ -205,15 +340,21 @@ ws.send(JSON.stringify({
   count: 10  // opcional
 }));
 
-// Solicitar resultados
+// Solicitar resultados (del usuario autenticado)
 ws.send(JSON.stringify({
   type: 'request-results',
   limit: 50  // opcional
 }));
 
-// Solicitar estadísticas
+// Solicitar estadísticas (del usuario autenticado)
 ws.send(JSON.stringify({
   type: 'request-statistics'
+}));
+
+// Solicitar historial (del usuario autenticado)
+ws.send(JSON.stringify({
+  type: 'request-history',
+  limit: 100  // opcional
 }));
 
 // Ping
@@ -225,8 +366,14 @@ ws.send(JSON.stringify({
 ### Mensajes Entrantes (Servidor → Cliente)
 
 ```javascript
-// Conexión establecida
-{ type: 'connected', message: '...', timestamp: '...' }
+// Conexión establecida (sin autenticación)
+{ type: 'auth-required', message: 'Authentication required...', timestamp: '...' }
+
+// Conexión establecida (con autenticación en URL)
+{ type: 'connected', message: '...', authenticated: true, username: '...', timestamp: '...' }
+
+// Autenticación exitosa (después de enviar token)
+{ type: 'authenticated', message: 'Authentication successful', username: '...', timestamp: '...' }
 
 // Actualización de resultado
 { type: 'result-update', data: { resultado: 12, ... } }
@@ -237,11 +384,14 @@ ws.send(JSON.stringify({
 // Análisis
 { type: 'analysis', data: { batchSize: 10, suggestion: '...', ... } }
 
-// Resultados
+// Resultados (del usuario autenticado)
 { type: 'results', data: [...], total: 100 }
 
-// Estadísticas
-{ type: 'statistics', data: { currentResults: 50, ... } }
+// Estadísticas (del usuario autenticado)
+{ type: 'statistics', data: { totalResults: 50, ... } }
+
+// Historial (del usuario autenticado)
+{ type: 'history', data: [...] }
 
 // Resultados limpiados
 { type: 'results-cleared' }
@@ -502,7 +652,7 @@ npm test
 
 **¿Verificar que todo funciona?**
 ```bash
-npm test                           # Debe pasar 36/36 tests
+npm test                           # Ejecutar tests
 curl http://localhost:8080/health  # Debe retornar status: healthy
 ```
 
@@ -515,16 +665,57 @@ Ver [DOCKER_TROUBLESHOOTING.md](./DOCKER_TROUBLESHOOTING.md)
 **¿Dudas sobre TokioAI?**  
 Ver [TOKIOAI_README.md](./TOKIOAI_README.md)
 
+**¿Información sobre seguridad?**  
+Ver [SECURITY.md](./SECURITY.md) - Guía completa de autenticación y encriptación
+
+## 🔐 Seguridad
+
+### Características de Seguridad Implementadas
+
+- ✅ **Autenticación JWT**: Sistema seguro de login con tokens
+- ✅ **Encriptación AES-256-GCM**: Datos de usuario encriptados en reposo
+- ✅ **Hash de contraseñas**: Bcrypt con 10 rounds
+- ✅ **Aislamiento de datos**: Cada usuario solo accede a sus propios datos
+- ✅ **Rate limiting**: Protección contra ataques de fuerza bruta
+- ✅ **WebSocket autenticado**: Conexiones en tiempo real seguras
+- ✅ **Roles de usuario**: Admin y usuario regular
+
+### Credenciales por Defecto
+
+**Usuario Administrador**:
+- Username: `admin`
+- Password: `Tokyo2024!`
+
+**⚠️ IMPORTANTE**: Cambiar la contraseña en producción:
+```bash
+export ADMIN_PASSWORD="tu_contraseña_segura"
+```
+
+### Guía de Seguridad Completa
+
+Ver [SECURITY.md](./SECURITY.md) para:
+- Cómo autenticarse
+- Uso de endpoints protegidos
+- WebSocket con autenticación
+- Funciones de administrador
+- Mejores prácticas de seguridad
+- Solución de problemas
+
 ## 📝 Issues Conocidos y TODOs
 
 Ver los issues abiertos en GitHub para:
 
-- [ ] ~~Integrar implementación real de TokioAI~~ ✅ **COMPLETADO** (ya usa implementación real)
+- [x] ~~Integrar implementación real de TokioAI~~ ✅ **COMPLETADO**
+- [x] ~~Añadir autenticación y autorización~~ ✅ **COMPLETADO**
+- [x] ~~Implementar encriptación de datos~~ ✅ **COMPLETADO**
+- [x] ~~Proteger endpoints con autenticación~~ ✅ **COMPLETADO**
+- [x] ~~WebSocket con autenticación~~ ✅ **COMPLETADO**
 - [ ] Añadir ejemplo de integración con cliente Flutter
 - [ ] Configurar despliegue automatizado a Play Store con Fastlane
-- [ ] Añadir autenticación y autorización
 - [ ] Mejorar cobertura de tests
 - [ ] Añadir documentación de API con OpenAPI/Swagger
+- [ ] Implementar recuperación de contraseña
+- [ ] Añadir autenticación de dos factores (2FA)
 
 ## 📄 Licencia
 

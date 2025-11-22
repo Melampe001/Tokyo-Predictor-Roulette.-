@@ -52,3 +52,7 @@ android/app/signing-key.jks
 # Logs
 logs/
 *.log
+
+# User data (encrypted storage)
+data/
+*.enc
