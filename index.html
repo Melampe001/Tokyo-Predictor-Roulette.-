@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tokyo Predictor - WebSocket Demo</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+      padding: 20px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+    }
+
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+      padding: 30px;
+    }
+
+    h1 {
+      color: #333;
+      margin-bottom: 10px;
+      font-size: 28px;
+    }
+
+    .subtitle {
+      color: #666;
+      margin-bottom: 20px;
+      font-size: 14px;
+    }
+
+    .status {
+      padding: 12px 16px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 14px;
+    }
+
+    .status.connected {
+      background: #d4edda;
+      color: #155724;
+      border: 1px solid #c3e6cb;
+    }
+
+    .status.disconnected {
+      background: #f8d7da;
+      color: #721c24;
+      border: 1px solid #f5c6cb;
+    }
+
+    .status-indicator {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: currentColor;
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.5; }
+    }
+
+    .input-group {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    input[type="text"] {
+      flex: 1;
+      padding: 12px 16px;
+      border: 2px solid #e0e0e0;
+      border-radius: 8px;
+      font-size: 14px;
+      transition: border-color 0.3s;
+    }
+
+    input[type="text"]:focus {
+      outline: none;
+      border-color: #667eea;
+    }
+
+    button {
+      padding: 12px 24px;
+      background: #667eea;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 500;
+      transition: background 0.3s;
+    }
+
+    button:hover {
+      background: #5568d3;
+    }
+
+    button:active {
+      transform: scale(0.98);
+    }
+
+    .todos {
+      list-style: none;
+    }
+
+    .todo-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px;
+      border: 1px solid #e0e0e0;
+      border-radius: 8px;
+      margin-bottom: 8px;
+      transition: all 0.3s;
+    }
+
+    .todo-item:hover {
+      background: #f5f5f5;
+      border-color: #667eea;
+    }
+
+    .todo-item.completed {
+      opacity: 0.6;
+    }
+
+    .todo-item.completed .todo-text {
+      text-decoration: line-through;
+    }
+
+    .todo-checkbox {
+      width: 20px;
+      height: 20px;
+      cursor: pointer;
+    }
+
+    .todo-text {
+      flex: 1;
+      font-size: 14px;
+      color: #333;
+    }
+
+    .todo-meta {
+      font-size: 11px;
+      color: #999;
+      margin-right: 8px;
+    }
+
+    .delete-btn {
+      padding: 6px 12px;
+      background: #dc3545;
+      font-size: 12px;
+    }
+
+    .delete-btn:hover {
+      background: #c82333;
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 40px;
+      color: #999;
+    }
+
+    .logs {
+      margin-top: 30px;
+      padding: 15px;
+      background: #f8f9fa;
+      border-radius: 8px;
+      max-height: 200px;
+      overflow-y: auto;
+      font-family: 'Courier New', monospace;
+      font-size: 12px;
+    }
+
+    .log-entry {
+      margin-bottom: 4px;
+      color: #666;
+    }
+
+    .log-entry.info {
+      color: #0066cc;
+    }
+
+    .log-entry.success {
+      color: #28a745;
+    }
+
+    .log-entry.error {
+      color: #dc3545;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🎰 Tokyo Predictor - WebSocket Demo</h1>
+    <p class="subtitle">Demostración de sincronización REST-write + WS-push</p>
+
+    <div id="status" class="status disconnected">
+      <div class="status-indicator"></div>
+      <span id="status-text">Desconectado</span>
+    </div>
+
+    <div class="input-group">
+      <input 
+        type="text" 
+        id="todo-input" 
+        placeholder="Escribe una nueva tarea..."
+        onkeypress="if(event.key === 'Enter') addTodo()"
+      >
+      <button onclick="addTodo()">Agregar</button>
+    </div>
+
+    <ul id="todos" class="todos">
+      <li class="empty-state">No hay tareas. ¡Agrega una!</li>
+    </ul>
+
+    <div class="logs">
+      <div><strong>Registro de eventos:</strong></div>
+      <div id="logs"></div>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+  <script>
+    let client;
+    const statusEl = document.getElementById('status');
+    const statusTextEl = document.getElementById('status-text');
+    const todosEl = document.getElementById('todos');
+    const logsEl = document.getElementById('logs');
+    const todoInput = document.getElementById('todo-input');
+
+    // Initialize client
+    try {
+      client = new TodoClient({
+        serverUrl: 'http://localhost:3001',
+        wsUrl: 'ws://localhost:3001'
+      });
+
+      // Listen for events
+      client.addListener((event) => {
+        handleEvent(event);
+      });
+
+      log('Cliente inicializado', 'info');
+    } catch (error) {
+      log('Error inicializando cliente: ' + error.message, 'error');
+    }
+
+    function handleEvent(event) {
+      switch (event.type) {
+        case 'connection':
+          if (event.status === 'connected') {
+            statusEl.className = 'status connected';
+            statusTextEl.textContent = 'Conectado al servidor';
+            log('WebSocket conectado', 'success');
+          } else if (event.status === 'disconnected') {
+            statusEl.className = 'status disconnected';
+            statusTextEl.textContent = 'Desconectado del servidor';
+            log('WebSocket desconectado', 'error');
+          } else if (event.status === 'error') {
+            log('Error de conexión WebSocket', 'error');
+          }
+          break;
+
+        case 'created':
+          log(`Todo creado: ${event.data.text}${event.offline ? ' (offline)' : ''}`, 'success');
+          renderTodos();
+          break;
+
+        case 'updated':
+          log(`Todo actualizado: ${event.data.text}${event.offline ? ' (offline)' : ''}`, 'info');
+          renderTodos();
+          break;
+
+        case 'deleted':
+          log(`Todo eliminado${event.offline ? ' (offline)' : ''}`, 'info');
+          renderTodos();
+          break;
+
+        case 'sync':
+          log(`Sincronizado: ${event.data.length} todos${event.offline ? ' (offline)' : ''}`, 'info');
+          renderTodos();
+          break;
+      }
+    }
+
+    function renderTodos() {
+      const todos = client.getTodos();
+      
+      if (todos.length === 0) {
+        todosEl.innerHTML = '<li class="empty-state">No hay tareas. ¡Agrega una!</li>';
+        return;
+      }
+
+      todosEl.innerHTML = todos.map(todo => `
+        <li class="todo-item ${todo.completed ? 'completed' : ''}">
+          <input 
+            type="checkbox" 
+            class="todo-checkbox"
+            ${todo.completed ? 'checked' : ''}
+            onchange="toggleTodo('${todo.id}')"
+          >
+          <span class="todo-text">${escapeHtml(todo.text)}</span>
+          <span class="todo-meta">${new Date(todo.createdAt).toLocaleTimeString()}</span>
+          <button class="delete-btn" onclick="deleteTodo('${todo.id}')">Eliminar</button>
+        </li>
+      `).join('');
+    }
+
+    async function addTodo() {
+      const text = todoInput.value.trim();
+      if (!text) return;
+
+      try {
+        await client.createTodo(text);
+        todoInput.value = '';
+      } catch (error) {
+        log('Error agregando todo: ' + error.message, 'error');
+      }
+    }
+
+    async function toggleTodo(id) {
+      const todos = client.getTodos();
+      const todo = todos.find(t => t.id === id);
+      if (!todo) return;
+
+      try {
+        await client.updateTodo(id, { completed: !todo.completed });
+      } catch (error) {
+        log('Error actualizando todo: ' + error.message, 'error');
+        renderTodos(); // Revert UI
+      }
+    }
+
+    async function deleteTodo(id) {
+      try {
+        await client.deleteTodo(id);
+      } catch (error) {
+        log('Error eliminando todo: ' + error.message, 'error');
+      }
+    }
+
+    function log(message, type = '') {
+      const entry = document.createElement('div');
+      entry.className = `log-entry ${type}`;
+      entry.textContent = `[${new Date().toLocaleTimeString()}] ${message}`;
+      logsEl.appendChild(entry);
+      logsEl.scrollTop = logsEl.scrollHeight;
+
+      // Keep only last 50 entries
+      while (logsEl.children.length > 50) {
+        logsEl.removeChild(logsEl.children[0]);
+      }
+    }
+
+    function escapeHtml(text) {
+      const div = document.createElement('div');
+      div.textContent = text;
+      return div.innerHTML;
+    }
+
+    // Initial render
+    renderTodos();
+  </script>
+</body>
+</html>
