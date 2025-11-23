@@ -107,6 +107,13 @@ app.post('/api/result', async (req, res) => {
       });
     }
 
+    // Validate that value is a number
+    if (typeof value !== 'number' || isNaN(value)) {
+      return res.status(400).json({
+        error: 'Invalid value: must be a number'
+      });
+    }
+
     const result = tokioAI.captureResult(value);
     logger.info('Result captured:', { value, timestamp: result.timestamp });
 
@@ -387,13 +394,15 @@ const shutdown = async (signal) => {
 process.on('SIGTERM', () => shutdown('SIGTERM'));
 process.on('SIGINT', () => shutdown('SIGINT'));
 
-// Start server
-server.listen(PORT, () => {
-  logger.info(`Tokyo Predictor server started`);
-  logger.info(`Environment: ${NODE_ENV}`);
-  logger.info(`HTTP server listening on port ${PORT}`);
-  logger.info(`WebSocket server ready at ws://localhost:${PORT}`);
-  logger.info(`Health check: http://localhost:${PORT}/health`);
-});
+// Start server only if run directly (not imported for testing)
+if (import.meta.url === `file://${process.argv[1]}`) {
+  server.listen(PORT, () => {
+    logger.info(`Tokyo Predictor server started`);
+    logger.info(`Environment: ${NODE_ENV}`);
+    logger.info(`HTTP server listening on port ${PORT}`);
+    logger.info(`WebSocket server ready at ws://localhost:${PORT}`);
+    logger.info(`Health check: http://localhost:${PORT}/health`);
+  });
+}
 
 export default app;

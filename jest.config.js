@@ -11,5 +11,6 @@ export default {
   coverageDirectory: 'coverage',
   coverageReporters: ['text', 'lcov', 'html'],
   verbose: true,
-  testTimeout: 10000
+  testTimeout: 10000,
+  maxWorkers: 1  // Run tests serially to avoid port conflicts
 };
