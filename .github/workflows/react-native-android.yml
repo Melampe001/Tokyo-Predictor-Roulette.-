@@ -1,0 +1,67 @@
+name: React Native Android Build
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: Build React Native Android
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Cache Gradle packages
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+          restore-keys: |
+            ${{ runner.os }}-gradle-
+
+      - name: Make Gradlew executable
+        run: chmod +x android/gradlew
+        if: hashFiles('android/gradlew') != ''
+
+      - name: Build Android Release APK
+        run: |
+          if [ -d "android" ]; then
+            # Build release APK using Gradle for CI/CD
+            cd android && ./gradlew assembleRelease
+          else
+            echo "No Android directory found. Skipping React Native Android build."
+            echo "To test locally with device/emulator, use: npx react-native run-android"
+          fi
+
+      - name: Upload Release APK
+        uses: actions/upload-artifact@v4
+        if: hashFiles('android/app/build/outputs/apk/release/*.apk') != ''
+        with:
+          name: react-native-android-release-apk
+          path: android/app/build/outputs/apk/release/*.apk
+          retention-days: 30
