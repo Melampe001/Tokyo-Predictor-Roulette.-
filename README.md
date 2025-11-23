@@ -96,12 +96,18 @@ Servicios disponibles:
 
 ### Variables de Entorno
 
-Crear un archivo `.env` en la raíz del proyecto:
+Crear un archivo `.env` en la raíz del proyecto (puedes copiar `.env.example`):
+
+```bash
+cp .env.example .env
+```
+
+O crear manualmente:
 
 ```env
 # Server Configuration
-PORT=8080
 NODE_ENV=production
+PORT=8080
 
 # TokioAI Configuration
 BATCH_SIZE=10
@@ -403,6 +409,8 @@ docker-compose up -d
 ```
 
 ### Variables de Entorno Recomendadas para Producción
+
+Ver el archivo `.env.example` para la configuración completa:
 
 ```env
 NODE_ENV=production
