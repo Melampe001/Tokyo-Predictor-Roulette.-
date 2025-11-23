@@ -321,7 +321,7 @@ describe('Final Comprehensive Tests', () => {
           dominant: 'neutral',
           average: 5
         },
-        suggestion: 'Datos insuficientes para análisis completo (solo 1 resultados).'
+        suggestion: 'Datos insuficientes para análisis completo (solo 1 resultado).'
       };
 
       mockTokioAI.analyzeBatch.mockReturnValue(mockAnalysis);
