@@ -240,11 +240,13 @@ const clients = new Set();
 
 /**
  * Broadcast message to all connected WebSocket clients
+ * Optimized to serialize message only once
  */
 function broadcastToClients(message) {
   const payload = JSON.stringify(message);
+  const OPEN = 1; // WebSocket.OPEN constant
   clients.forEach(client => {
-    if (client.readyState === client.OPEN) {
+    if (client.readyState === OPEN) {
       client.send(payload);
     }
   });
